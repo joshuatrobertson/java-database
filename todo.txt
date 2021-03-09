@@ -1,0 +1,7 @@
+
+
+- Check if table name already exists
+table.get(newTable) != null
+
+- Get elements from file
+- Create new table using elements
