@@ -47,7 +47,7 @@ public class Table {
 
         // Split the incoming record by commas
         String[] splitRecord = record.split(",");
-        Record newRecord = new Record(primaryKey, splitRecord, columns, false);;
+        Record newRecord = new Record(primaryKey, splitRecord);;
         records.add(newRecord);
 
     }
@@ -72,7 +72,7 @@ public class Table {
     void updateRecord(int key, int itemLocation, String newRecord) {
         for (int i = 0; i < records.size(); i++) {
             if (records.get(i).getKey() == key) {
-                records.get(i).setRecord(itemLocation, newRecord);
+                records.get(i).updateElement(itemLocation, newRecord);
             }
         }
     }
