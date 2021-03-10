@@ -23,8 +23,6 @@ public class FileIO {
                 line = reader.readLine();
             }
             reader.close();
-
-            // Look for exception
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,16 +54,22 @@ public class FileIO {
 
     // Returns the primary keys from the file into a String array
     String[] getForeignKeys() {
-        // Get the line in the file containing the headers
-        String originalString = linesInFile.get(11);
-        // Remove whitespace and split by '||'
-        originalString = originalString.replaceAll("\\s+","");
-        return originalString.split("~");
+        int i = 3;
+        String line = linesInFile.get(i);
+        // Begin from the records within the text file
+        while (!line.equals("ForeignKeys:")) {
+            i++;
+            line = linesInFile.get(i);
+        }
+        line = linesInFile.get(++i);
+
+        // Remove whitespace and split by '~'
+        line = line.replaceAll("\\s+","");
+        return line.split("~");
     }
 
     List<String[]> getRecords() {
         List<String[]> records = new ArrayList<>();
-        String[] currentRecord;
         String line;
         // Begin from the records within the text file
         int i = 7;
@@ -73,8 +77,8 @@ public class FileIO {
         // Scan through all records until we reach the foreign key section
         while (!line.equals("ForeignKeys:")) {
             String newString = line;
-            newString = newString.replaceAll("\\s+","");
-            String[] splitString = newString.split("\\|");
+            line = line.replaceAll("\\s+","");
+            String[] splitString = line.split("\\|");
             records.add(splitString);
             i++;
             line = linesInFile.get(i);

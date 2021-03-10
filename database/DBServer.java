@@ -1,3 +1,5 @@
+import Parser.Parser;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -32,8 +34,12 @@ class DBServer
 
     private void processNextCommand(BufferedReader socketReader, BufferedWriter socketWriter) throws IOException, NullPointerException
     {
+        DBRun JrSQL = new DBRun();
+
         String incomingCommand = socketReader.readLine();
-        // ADD CODE HERE TO SEND COMMAND TO BE EXECUTED
+        String output = JrSQL.run(incomingCommand);
+        socketWriter.write(output);
+        socketWriter.write("\n" + ((char)4) + "\n");
         socketWriter.flush();
     }
 

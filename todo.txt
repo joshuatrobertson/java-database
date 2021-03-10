@@ -1,7 +1,5 @@
 
 
-- Check if table name already exists
-table.get(newTable) != null
+Figure out how to implement Error testing
 
-- Get elements from file
-- Create new table using elements
+Add interface with error checking so Command.USE Command.ERROR.MISSING_SEMI_COLON

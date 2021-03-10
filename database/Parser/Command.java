@@ -1,6 +1,7 @@
 package Parser;
 
 public enum Command {
+    //Commands
     USE,
     CREATE,
     DROP,
@@ -10,5 +11,10 @@ public enum Command {
     UPDATE,
     DELETE,
     JOIN,
-    NO_COMMAND;
+    NO_COMMAND,
+
+
+    //Error Codes to be returned from the Parser
+    MISSING_SEMI_COLON,
+    TABLE_NAME_TAKEN;
 }

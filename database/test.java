@@ -16,6 +16,7 @@ public class test {
         List<Integer> list2 = new ArrayList<>();
         List<Integer> columnsToReturn = new ArrayList<>();
         List<Integer> keysToReturn = new ArrayList<>();
+        String[] userCommands = new String[0];
 
 
         testFile.readFile("files/example_file.jsql", testTable);
@@ -47,13 +48,9 @@ public class test {
         testTable.printFullTable();
 
 
-        Parser testParser = new Parser();
+        Parser testParser = new Parser(userCommands);
         //Alter
-        System.out.println(testParser.parseText("ALTER TABLE actors DROP age"));
-        System.out.println(testParser.parseText("ALTER TABLE actors add age"));
 
-
-        System.out.println(testParser.parseText("ALTER TABLE actors add age"));
 
         Search searchItem1 = new Search(1, "25", testTable);
         System.out.println(searchItem1.searchLikeCommand());
