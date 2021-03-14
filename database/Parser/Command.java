@@ -3,7 +3,8 @@ package Parser;
 public enum Command {
     //Commands
     USE,
-    CREATE,
+    CREATE_TABLE,
+    CREATE_DATABASE,
     DROP,
     ALTER,
     INSERT,

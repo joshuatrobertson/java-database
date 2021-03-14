@@ -18,11 +18,15 @@ public class Parser {
             return Command.USE;
         }
 
-        // Create command
-        if (testFirstTwoCommands("create", "table") ||
-                testFirstTwoCommands("create", "database") &&
+        // Create table command
+        if (testFirstTwoCommands("create", "table")) {
+            return Command.CREATE_TABLE;
+        }
+
+        // Create database command
+        if (testFirstTwoCommands("create", "database") &&
                         userCommand.length == 3) {
-            return Command.CREATE;
+            return Command.CREATE_DATABASE;
         }
 
         // Drop command

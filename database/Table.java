@@ -30,6 +30,10 @@ public class Table {
         }
     }
 
+    public String getTableName() {
+        return tableName;
+    }
+
     void setPrimaryKey(int primaryKey) {
         this.primaryKey = primaryKey;
     }

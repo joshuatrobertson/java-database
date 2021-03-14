@@ -19,6 +19,9 @@ public class test {
         String[] userCommands = new String[0];
 
 
+        /*
+
+        testFile.createDatabaseFolder("imdb");
         testFile.readFile("files/example_file.jsql", testTable);
         System.out.println(Arrays.toString(testFile.getColumnHeaders()));
         System.out.println(Arrays.toString(testFile.getPrimaryKeys()));
@@ -26,7 +29,9 @@ public class test {
 
 
         testFile.getRecords();
-        testFile.createSchemaFile("testTable");
+        testFile.createSchemaFile("testTable", "imdb");
+        testFile.createSchemaFile("testTable2", "imdb");
+
 
         Database imdb = new Database("imdb");
         Database testDatabase = new Database("test");
@@ -70,6 +75,11 @@ public class test {
         System.out.println("List1/ 2 = " + keysToReturn + columnsToReturn);
 
         testTable.printPartialTable(keysToReturn, columnsToReturn);
+
+*/
+        DBRun newsql = new DBRun();
+        System.out.println(newsql.run("create database testDatabase"));
+        System.out.println(newsql.run("use random"));
 
 
     }

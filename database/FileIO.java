@@ -1,6 +1,7 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // Reads/writes using the schema found in project-files/file_schema.pdf
@@ -100,16 +101,16 @@ public class FileIO {
     }
 
     // Create a schema file
-    public void createSchemaFile(String tableName) {
+    public void createSchemaFile(String tableName, String databaseName) {
         try {
-            FileWriter writer = new FileWriter("files" + File.separator + tableName + ".jsql");
+            FileWriter writer = new FileWriter("files" + File.separator + databaseName + File.separator + tableName + ".jsql");
             writer.write("TableName:\n" + tableName);
             writeItem(writer, getColumnHeaders(), "|||", "\nColumns");
             writeItem(writer, getPrimaryKeys(), "||", "\nPrimaryKeys");
             writeRecords(writer, getRecords());
             writeItem(writer, getForeignKeys(), "~", "ForeignKeys");
             writer.close();
-            System.out.println("Successfully wrote to " + tableName + ".jsql");
+            System.out.println("Successfully wrote to " + databaseName + "/" + tableName + ".jsql");
         } catch (IOException e) {
             System.out.println("Error creating schema file.");
             e.printStackTrace();
@@ -118,30 +119,38 @@ public class FileIO {
 
 
     // Write the record/s to the file with a '|' deliminator
-    private void writeRecords(FileWriter writer, List<String[]> Records) {
-        try {
-            writer.write("\nRecords:\n");
-            for (String[] record : Records) {
-                for (int i = 0; i < getColumnHeaders().length; i++) {
-                    writer.write(record[i] + " | ");
-                }
-                writer.write("\n");
+    private void writeRecords(FileWriter writer, List<String[]> Records) throws IOException {
+        writer.write("\nRecords:\n");
+        for (String[] record : Records) {
+            for (int i = 0; i < getColumnHeaders().length; i++) {
+                writer.write(record[i] + " | ");
             }
-        } catch (IOException e) {
-            System.out.println("Error writing record\s");
+            writer.write("\n");
         }
     }
 
     // Write the items to the file with a specified deliminator
-    private void writeItem(FileWriter writer, String[] items, String deliminator, String itemToWrite) {
-        try {
-            writer.write(itemToWrite + ":\n");
-            for (String item : items) {
-                writer.write(item + " " + deliminator + " ");
-            }
-        } catch (IOException e) {
-            System.out.println("Error writing item\s");
+    private void writeItem(FileWriter writer, String[] items, String deliminator, String itemToWrite) throws IOException {
+        writer.write(itemToWrite + ":\n");
+        for (String item : items) {
+            writer.write(item + " " + deliminator + " ");
         }
+    }
+
+    public void createDatabaseFolder(String databaseName) {
+        try {
+            Files.createDirectory(Paths.get("files" + File.separator + databaseName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean checkFolderExists(String folderName) {
+        File f = new File("files" + File.separator + folderName);
+        if (f.exists() && f.isDirectory()) {
+            return true;
+        }
+        return false;
     }
 
 
