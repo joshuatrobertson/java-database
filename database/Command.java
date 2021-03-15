@@ -1,5 +1,3 @@
-package Parser;
-
 public enum Command {
     //Commands
     USE,
@@ -17,5 +15,6 @@ public enum Command {
 
     //Error Codes to be returned from the Parser
     MISSING_SEMI_COLON,
-    TABLE_NAME_TAKEN;
+    TABLE_NAME_TAKEN,
+    NO_ERRORS;
 }

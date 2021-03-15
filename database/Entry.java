@@ -1,13 +1,11 @@
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class Record {
+public class Entry {
     private int primaryKey;
     private List<String> elements = new ArrayList<String>();
 
-    public Record(int key, String @NotNull [] records) {
+    public Entry(int key, String [] records) {
         primaryKey = key;
         // Add in the entries and column names
         for (int i = 0; i < records.length; i++) {

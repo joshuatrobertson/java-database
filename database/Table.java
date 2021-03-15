@@ -4,7 +4,7 @@ public class Table {
 
     private String tableName;
     private List<String> columns = new ArrayList<String>();
-    private List<Record> records = new ArrayList<Record>();
+    private List<Entry> entries = new ArrayList<Entry>();
     private int primaryKey;
 
     public Table(String tableName) {
@@ -25,14 +25,12 @@ public class Table {
         columns.add(columnName);
         // Fill the array with 'void' so that the list can be accessed
         // at that index
-        for (int i = 0; i < records.size(); i++){
-            records.get(i).addNewNullElement();
+        for (int i = 0; i < entries.size(); i++){
+            entries.get(i).addNewNullElement();
         }
     }
 
-    public String getTableName() {
-        return tableName;
-    }
+    public String getTableName() { return tableName; }
 
     void setPrimaryKey(int primaryKey) {
         this.primaryKey = primaryKey;
@@ -40,27 +38,28 @@ public class Table {
 
     int getNumberOfColumns() { return columns.size(); }
 
-    int getNumberOfRecords() { return records.size(); }
+    int getNumberOfEntries() { return entries.size(); }
 
-    List<Record> getRecords() { return records; }
+    List<Entry> getEntries() { return entries; }
 
     // Takes in a comma separated string and adds it to the records ArrayList
-    void insertRecord(String record) {
+    void insertNewEntry(String entry) {
         // Increase the primary key by one with each record
         primaryKey++;
 
         // Split the incoming record by commas
-        String[] splitRecord = record.split(",");
-        Record newRecord = new Record(primaryKey, splitRecord);;
-        records.add(newRecord);
-
+        String[] splitRecord = entry.split(",");
+        Entry newEntries = new Entry(primaryKey, splitRecord);;
+        entries.add(newEntries);
     }
+
+    void insertEntry(Entry entry) { entries.add(entry); }
 
     // Delete a record from the arrayList
     void deleteRecord(int key) {
-        for (int i = 0; i < records.size(); i++) {
-            if (records.get(i).getKey() == key) {
-                records.remove(i);
+        for (int i = 0; i < entries.size(); i++) {
+            if (entries.get(i).getKey() == key) {
+                entries.remove(i);
             }
         }
     }
@@ -68,15 +67,15 @@ public class Table {
     // Deletes a row with the associated data
     void deleteRow(int rowNumber) {
         columns.remove(rowNumber);
-        for (int i = 0; i < records.size(); i++) {
-            records.remove(rowNumber);
+        for (int i = 0; i < entries.size(); i++) {
+            entries.remove(rowNumber);
         }
     }
 
     void updateRecord(int key, int itemLocation, String newRecord) {
-        for (int i = 0; i < records.size(); i++) {
-            if (records.get(i).getKey() == key) {
-                records.get(i).updateElement(itemLocation, newRecord);
+        for (int i = 0; i < entries.size(); i++) {
+            if (entries.get(i).getKey() == key) {
+                entries.get(i).updateElement(itemLocation, newRecord);
             }
         }
     }
@@ -87,9 +86,9 @@ public class Table {
         System.out.print("Key" + "\t");
         System.out.print(columns + "\n");
 
-        for (int i = 0; i < records.size(); i++) {
-            System.out.print(records.get(i).getKey() + "\t");
-            System.out.print(records.get(i).getElements() + "\n");
+        for (int i = 0; i < entries.size(); i++) {
+            System.out.print(entries.get(i).getKey() + "\t");
+            System.out.print(entries.get(i).getElements() + "\n");
         }
     }
 
@@ -104,13 +103,13 @@ public class Table {
 
         // Loop through keys and see if any match,
         for (Integer key : keys) {
-            for (int i = 0; i < records.size(); i++) {
-                if (records.get(i).getKey() == key) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (entries.get(i).getKey() == key) {
                     // If a key matches print the key
-                    System.out.print(records.get(i).getKey() + "\t");
+                    System.out.print(entries.get(i).getKey() + "\t");
                     // Then iterate through the columns and print only the columns given in the list 'Columns'
                     for (Integer column : Columns) {
-                        System.out.print(records.get(i).getSingleElement(column - 1)+ "\t");
+                        System.out.print(entries.get(i).getSingleElement(column - 1)+ "\t");
                     }
                 }
             } System.out.println("\n");

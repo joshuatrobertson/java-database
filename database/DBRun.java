@@ -1,14 +1,12 @@
-import Parser.*;
 import java.util.*;
 
 public class DBRun {
 
-    private String currentDatabase;
+    private Database currentDatabase;
     private HashMap<String, Database> databases = new HashMap<>();
     private Command command;
     private String[] tokenizedText;
     private String stringToPrint;
-    boolean databaseInUse = false;
     FileIO file = new FileIO();
 
     public DBRun() {
@@ -23,18 +21,12 @@ public class DBRun {
         return stringToPrint;
     }
 
+    // Splits the text up an removes any whitespace
     private String[] tokenizeText(String originalText) {
-        String lowerCase = originalText.toLowerCase();
+        String lowerCase = originalText.toLowerCase().trim();
         return lowerCase.split("\\s+");
     }
 
-    public String returnCurrentDatabase() {
-        return currentDatabase;
-    }
-
-    public boolean databaseInUse() {
-        return databaseInUse;
-    }
 
     public void addDatabase(String databaseName, Database database) {
         databases.put(databaseName, database);
@@ -43,7 +35,8 @@ public class DBRun {
     public String returnRelevantCommand(Command command) {
         switch (command) {
             case USE:
-                return useCommand();
+                UseCommand useCommand = new UseCommand(tokenizedText, databases, currentDatabase);
+                return useCommand.run();
             case CREATE_TABLE:
                 return createTableCommand();
             case CREATE_DATABASE:
@@ -62,22 +55,12 @@ public class DBRun {
                 return deleteCommand();
             case JOIN:
                 return joinCommand();
+            case MISSING_SEMI_COLON:
+                return "[ERROR]: Missing semi-colon";
             case NO_COMMAND:
                 return "[ERROR]";
         }
         return "No command found!";
-    }
-
-    private String useCommand() {
-        String databaseName = tokenizedText[1];
-        if (file.checkFolderExists(databaseName)) {
-            databaseInUse = true;
-            currentDatabase = databaseName;
-            return "[OK]";
-        }
-        else {
-            return "[ERROR]: Unknown database";
-        }
     }
 
     private String createTableCommand() {

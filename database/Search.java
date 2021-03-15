@@ -5,14 +5,14 @@ public class Search {
     String itemToSearch;
     Table tableToSearch, newTable;
     List<Integer> searchResults = new ArrayList<Integer>();
-    List<Record> oldRecords;
+    List<Entry> oldEntries;
 
 
     public Search(int columnToSearch, String itemToSearch, Table tableToSearch) {
         this.columnToSearch = columnToSearch;
         this.itemToSearch = itemToSearch;
         this.tableToSearch = tableToSearch;
-        oldRecords = tableToSearch.getRecords();
+        oldEntries = tableToSearch.getEntries();
     }
 
     List<Integer> searchSelectColumns(List<Integer> columnsToReturn, List<Integer> keysToReturn, boolean returnAll) {
@@ -34,12 +34,12 @@ public class Search {
     // relevant keys
     List<Integer> searchLikeCommand() {
         // Loop through each record
-        for (int i = 0; i < oldRecords.size(); i++) {
+        for (int i = 0; i < oldEntries.size(); i++) {
             //Search the column of the specific record
-            List<String> items = oldRecords.get(i).getElements();
+            List<String> items = oldEntries.get(i).getElements();
             // Search for instances of the itemToSearch String
             if (items.get(columnToSearch).contains(itemToSearch)) {
-                searchResults.add(oldRecords.get(i).getKey());
+                searchResults.add(oldEntries.get(i).getKey());
             }
         }
         return searchResults;
@@ -51,15 +51,15 @@ public class Search {
         float numberFromRecords, numberToSearch = Float.parseFloat(itemToSearch);
 
         // Loop through the records from the table
-        for (int i = 0; i < oldRecords.size(); i++) {
+        for (int i = 0; i < oldEntries.size(); i++) {
             //Search the column of the specific record
-            List<String> items = oldRecords.get(i).getElements();
+            List<String> items = oldEntries.get(i).getElements();
             // Fetch the number within the record without spaces
             numberFromRecords = Float.parseFloat(items.get(columnToSearch).trim());
 
             // Use the operatorCompare function to check the records
             if (operatorCompare(numberFromRecords, numberToSearch, operator)) {
-                searchResults.add(oldRecords.get(i).getKey());
+                searchResults.add(oldEntries.get(i).getKey());
             }
         }
         return searchResults;

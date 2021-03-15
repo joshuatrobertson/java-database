@@ -1,7 +1,4 @@
-import Parser.*;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class test {
@@ -78,10 +75,9 @@ public class test {
 
 */
         DBRun newsql = new DBRun();
-        System.out.println(newsql.run("create database testDatabase"));
-        System.out.println(newsql.run("use random"));
+        System.out.println(newsql.run("   uSe iMdb;    "));
 
-
+        System.out.println(newsql.run("use imdb2;"));
     }
 
 }

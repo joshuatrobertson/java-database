@@ -13,9 +13,9 @@ public class FileIO {
     private List<String> linesInFile = new ArrayList<>();
 
 
-    public void readFile(String fileName, Table tableName) {
+    public void readFile(String fileName) {
         BufferedReader reader;
-
+        linesInFile.clear();
         try {
             reader = new BufferedReader(new FileReader(fileName));
             String line = reader.readLine();
@@ -29,10 +29,9 @@ public class FileIO {
         }
     }
 
-    // Returns the table title from a file as a String
-    private String getTableTitle() {
-        String tableTitle = linesInFile.get(0);
-        return tableTitle.replace("TableName: ", "");
+    // Returns the table name from a file as a String
+    private String getTableName() {
+        return linesInFile.get(1);
     }
 
     // Returns the column headers from the file into a String array
@@ -138,12 +137,16 @@ public class FileIO {
     }
 
     public void createDatabaseFolder(String databaseName) {
-        try {
-            Files.createDirectory(Paths.get("files" + File.separator + databaseName));
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if (!checkFolderExists(databaseName)) {
+            try {
+                Files.createDirectory(Paths.get("files" + File.separator + databaseName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 
     public boolean checkFolderExists(String folderName) {
         File f = new File("files" + File.separator + folderName);
@@ -151,6 +154,44 @@ public class FileIO {
             return true;
         }
         return false;
+    }
+
+    public List<Table> readTablesFromDatabase(String database) {
+
+        File dir = new File("files" + File.separator + database);
+        File[] directoryListing = dir.listFiles();
+        List<Table> tables = new ArrayList<>();
+            for (File child : directoryListing) {
+                readFile(child.toString());
+                tables.add(readInFileToTable(database));
+            }
+        return tables;
+    }
+
+    public Table readInFileToTable(String databaseName) {
+        String tableName = getTableName();
+        Table newTable = new Table(tableName);
+        int key = 0;
+
+        // Add the columns to the table
+        String[] columns = getColumnHeaders();
+        for (String column : columns) { newTable.addNewColumn(column); }
+
+        // Add the records and primary keys
+        List<String[]> recordList;
+        String[] primaryKeys = getPrimaryKeys();
+        recordList = getRecords();
+
+        for (int i = 0; i < recordList.size(); i++) {
+            // Create a new entry based on the primary key from the above array and a String record
+            key = Integer.parseInt(primaryKeys[i]);
+            Entry entry = new Entry(key, recordList.get(i));
+            newTable.insertEntry(entry);
+        }
+        newTable.setPrimaryKey(key);
+        // Now set the primary key to the last (highest) value so that any new records
+        // will increment from there
+        return newTable;
     }
 
 

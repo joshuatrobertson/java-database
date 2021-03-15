@@ -1,4 +1,4 @@
-package Parser;
+import java.util.Arrays;
 
 // Takes in a String and parses to conform with the SQL grammar
 public class Parser {
@@ -12,6 +12,10 @@ public class Parser {
 
 
     public Command parseText() {
+
+        if (errorTest() != Command.NO_ERRORS) {
+            return errorTest();
+        }
 
         // Use command
         if (userCommand[0].equals("use") && (userCommand.length == 2)) {
@@ -69,6 +73,7 @@ public class Parser {
             return Command.JOIN;
         }
 
+        // Look for errors in the query
         return Command.NO_COMMAND;
     }
 
@@ -80,8 +85,15 @@ public class Parser {
         return false;
     }
 
-    private void errorTesting(String[] command) {
+    private Command errorTest() {
+        // Check for a missing semi-colon
+        String stringQuery = Arrays.toString(userCommand);
 
+        // As it is from a String array it will be concatenated with a ']'
+        if (!stringQuery.endsWith(";]")) {
+            return Command.MISSING_SEMI_COLON;
+        }
+        return Command.NO_ERRORS;
     }
 
 
