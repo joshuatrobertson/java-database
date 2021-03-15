@@ -52,7 +52,7 @@ public class Parser {
         }
 
         // Select command
-        if (userCommand[0].equals("select") && userCommand.length >= 5) {
+        if (userCommand[0].equals("select")) {
             return Command.SELECT;
         }
 

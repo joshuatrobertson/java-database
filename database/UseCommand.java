@@ -4,15 +4,18 @@ import java.util.List;
 public class UseCommand extends MainCommand {
 
     Database currentDatabase;
-
-    public UseCommand(String[] incomingCommand, HashMap databases, Database currentDatabase) {
+    String databaseName;
+    public UseCommand(String[] incomingCommand, HashMap databases) {
         super.tokenizedText = incomingCommand;
         super.databases = databases;
-        this.currentDatabase = currentDatabase;
+        databaseName = tokenizedText[1].replace(";", "");
     }
 
-    public String run() {
-        String databaseName = tokenizedText[1].replace(";", "");
+    public String run() { return readInTablesFromFile(); }
+
+    public String getCurrentDatabase() { return databaseName; }
+
+    private String readInTablesFromFile() {
         if (file.checkFolderExists(databaseName)) {
             Database database = new Database(databaseName);
             databases.put(databaseName, database);
@@ -21,15 +24,10 @@ public class UseCommand extends MainCommand {
             for (Table tables : listOfTables) {
                 database.addTable(tables);
             }
-            currentDatabase = database;
             return printOk();
         }
         else {
             return printError("Unknown database");
         }
     }
-
-    public Database getCurrentDatabase() { return (Database) databases.get(currentDatabase); }
-
-
 }

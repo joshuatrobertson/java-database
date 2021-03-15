@@ -1,5 +1,2 @@
-
-
-Figure out how to implement Error testing
-
-Add interface with error checking so Command.USE Command.ERROR.MISSING_SEMI_COLON
+Make Use command correctly change currentDatabase
+Only check files if the current database is not already set to the incoming database

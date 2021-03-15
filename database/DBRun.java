@@ -2,7 +2,7 @@ import java.util.*;
 
 public class DBRun {
 
-    private Database currentDatabase;
+    private String currentDatabase;
     private HashMap<String, Database> databases = new HashMap<>();
     private Command command;
     private String[] tokenizedText;
@@ -35,7 +35,8 @@ public class DBRun {
     public String returnRelevantCommand(Command command) {
         switch (command) {
             case USE:
-                UseCommand useCommand = new UseCommand(tokenizedText, databases, currentDatabase);
+                UseCommand useCommand = new UseCommand(tokenizedText, databases);
+                setCurrentDatabase(useCommand.getCurrentDatabase());
                 return useCommand.run();
             case CREATE_TABLE:
                 return createTableCommand();
@@ -48,7 +49,8 @@ public class DBRun {
             case INSERT:
                 return insertCommand();
             case SELECT:
-                return "[OK]" + "\n" + selectCommand();
+                SelectCommand selectCommand = new SelectCommand(tokenizedText, getDatabaseByName(currentDatabase));
+                return selectCommand.run();
             case UPDATE:
                 return updateCommand();
             case DELETE:
@@ -109,4 +111,8 @@ public class DBRun {
     private String joinCommand() {
         return "[OK]";
     }
+
+    public void setCurrentDatabase(String database) { currentDatabase = database; }
+
+    private Database getDatabaseByName(String databaseName) { return databases.get(databaseName); }
 }

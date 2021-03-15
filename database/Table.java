@@ -81,15 +81,27 @@ public class Table {
     }
 
 
-    // Prints out the table line by line
-    void printFullTable() {
-        System.out.print("Key" + "\t");
-        System.out.print(columns + "\n");
-
-        for (int i = 0; i < entries.size(); i++) {
-            System.out.print(entries.get(i).getKey() + "\t");
-            System.out.print(entries.get(i).getElements() + "\n");
+    // Prints out the table line by line by using StringBuilder to create the string
+    String printFullTable() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Key" + "\t\t");
+        for (String c : columns) {
+            builder.append(c + "\t\t");
         }
+        builder.append("\n");
+        // Loop through each entry
+        for (int i = 0; i < entries.size(); i++) {
+            // Add the keys
+            builder.append(entries.get(i).getKey() + "\t\t");
+
+            // Loop through each sub entry to get individual entries
+            for (int j = 0; j < entries.get(i).getElements().size(); j++) {
+                builder.append(entries.get(i).getSingleElement(j) + "\t\t");
+            }
+            builder.append("\n");
+        }
+        String finalText = builder.toString();
+        return finalText;
     }
 
     // Prints out partial table for searches

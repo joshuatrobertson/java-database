@@ -77,7 +77,9 @@ public class test {
         DBRun newsql = new DBRun();
         System.out.println(newsql.run("   uSe iMdb;    "));
 
-        System.out.println(newsql.run("use imdb2;"));
+        System.out.println(newsql.run("select * from testTable;"));
+        System.out.println(newsql.run("select * from testTable2;"));
+
     }
 
 }
