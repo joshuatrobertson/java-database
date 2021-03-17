@@ -1,0 +1,12 @@
+TableName:
+testTable
+Columns:
+Name ||| Age ||| Email ||| Company ||| 
+PrimaryKeys:
+1 || 3 || 4 ||
+Records:
+'Bob' | 21 | bob@bob.net | 1 | 
+'Harry' | 32 | harry@harry.com | 3 | 
+'Chris' | 42 | chris@chris.ac.uk | 2 | 
+ForeignKeys:
+1 ~ 3 ~ 

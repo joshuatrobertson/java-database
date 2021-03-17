@@ -1,0 +1,12 @@
+TableName:
+testTable2
+Columns:
+Name ||| DOB ||| Sex |||
+PrimaryKeys:
+1 || 3 || 10 ||
+Records:
+'Bob' | 21.10.73 | male |
+'Harry' | 18.07.92 | male |
+'Sarah' | 30.04.34 | female |
+ForeignKeys:
+1 ~ 2 ~
