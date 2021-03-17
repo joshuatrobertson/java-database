@@ -1,24 +1,21 @@
 import java.util.*;
 
-public class DBRun {
+public class JrSQL {
 
     private String currentDatabase;
-    private HashMap<String, Database> databases = new HashMap<>();
-    private Command command;
+    private final HashMap<String, Database> databases = new HashMap<>();
     private String[] tokenizedText;
-    private String stringToPrint;
     FileIO file = new FileIO();
 
-    public DBRun() {
+    public JrSQL() {
 
     }
 
     public String run(String incomingCommand) {
         tokenizedText = tokenizeText(incomingCommand);
         Parser parser = new Parser(tokenizedText);
-        command = parser.parseText();
-        stringToPrint = returnRelevantCommand(command);
-        return stringToPrint;
+        Command command = parser.parseText();
+        return returnRelevantCommand(command);
     }
 
     // Splits the text up an removes any whitespace

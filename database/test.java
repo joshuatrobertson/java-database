@@ -1,19 +1,9 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class test {
 
     public static void main(String args[])
     {
 
-        FileIO testFile = new FileIO();
-        Table testTable = new Table("testTable");
-        Table testTable1 = new Table("testTable");
-        List<Integer> list1 = new ArrayList<>();
-        List<Integer> list2 = new ArrayList<>();
-        List<Integer> columnsToReturn = new ArrayList<>();
-        List<Integer> keysToReturn = new ArrayList<>();
-        String[] userCommands = new String[0];
+
 
 
         /*
@@ -74,11 +64,35 @@ public class test {
         testTable.printPartialTable(keysToReturn, columnsToReturn);
 
 */
-        DBRun newsql = new DBRun();
+        JrSQL newsql = new JrSQL();
         System.out.println(newsql.run("   uSe iMdb;    "));
 
-        System.out.println(newsql.run("select * from testTable;"));
-        System.out.println(newsql.run("select * from testTable2;"));
+//        System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards > 5) AND (nationality == 'British');"));
+
+
+        System.out.println(newsql.run("         SELECT name, age FROM testtable;"));
+        //System.out.println(newsql.run("SELECT * FROM testtable WHERE name == 'Hugh Grant';"));
+        System.out.println(newsql.run("SELECT name, age FROM testtable WHERE (awards>5) AND ((nationality<='British') OR (nationality LIKE 'Australian'));"));
+        System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards>=5) AND (nationality=='British');"));
+
+
+        /*
+        Select does =
+        Gets columns to select in List<integer> columnIds
+        Gets the table in tableToPrint
+        Gets the bracket count in List<integer> bracketCount
+        prints select statement without where
+
+        Need to find -
+        WHERE statements
+        item, operator, searchTerm
+
+         */
+
+
+
+
+
 
     }
 

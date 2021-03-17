@@ -1,6 +1,6 @@
 import java.util.HashMap;
 
-public class MainCommand {
+abstract class MainCommand {
 
     protected HashMap databases;
     FileIO file = new FileIO();

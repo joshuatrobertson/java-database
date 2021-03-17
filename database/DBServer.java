@@ -3,6 +3,8 @@ import java.net.*;
 
 class DBServer
 {
+    JrSQL JrSQL = new JrSQL();
+
     public DBServer(int portNumber)
     {
         try {
@@ -31,7 +33,7 @@ class DBServer
 
     private void processNextCommand(BufferedReader socketReader, BufferedWriter socketWriter) throws IOException, NullPointerException
     {
-        DBRun JrSQL = new DBRun();
+
 
         String incomingCommand = socketReader.readLine();
         String output = JrSQL.run(incomingCommand);

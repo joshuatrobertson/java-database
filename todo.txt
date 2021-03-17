@@ -1,2 +1,12 @@
 Make Use command correctly change currentDatabase
 Only check files if the current database is not already set to the incoming database
+
+For select statement get number of brackets
+
+Add get column id function to use with select
+
+change jsql to jrsql
+
+
+Add each element to a list, pick out each element based on order of bracket array i.e.
+element[bracketArray[i]] = eyc
