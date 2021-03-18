@@ -30,15 +30,18 @@ public class JrSQL {
     }
 
     public String returnRelevantCommand(Command command) {
+
         switch (command) {
             case USE:
                 UseCommand useCommand = new UseCommand(tokenizedText, databases);
                 setCurrentDatabase(useCommand.getCurrentDatabase());
                 return useCommand.run();
             case CREATE_TABLE:
-                return createTableCommand();
+                CreateDatabase createTable = new CreateDatabase(tokenizedText, databases);
+                return createTable.run();
             case CREATE_DATABASE:
-                return createDatabaseCommand();
+                CreateDatabase createDatabase = new CreateDatabase(tokenizedText, databases);
+                return createDatabase.run();
             case DROP:
                 return dropCommand();
             case ALTER:
@@ -62,23 +65,7 @@ public class JrSQL {
         return "No command found!";
     }
 
-    private String createTableCommand() {
-       return "Create table";
-    }
 
-
-    // Creates a new database and folder within /files/
-    private String createDatabaseCommand() {
-        String databaseName = tokenizedText[2];
-        if (file.checkFolderExists(databaseName)) {
-            return "[ERROR]: Database already exists";
-        }
-        else {
-            Database newDatabase = new Database(databaseName);
-            databases.put(databaseName, newDatabase);
-            return "[OK]";
-        }
-    }
 
     private String dropCommand() {
         return "[OK]";
@@ -90,11 +77,6 @@ public class JrSQL {
 
     private String insertCommand() {
         return "[OK]";
-    }
-
-    private String selectCommand() {
-        String stringToReturn = "";
-        return stringToReturn;
     }
 
     private String updateCommand() {

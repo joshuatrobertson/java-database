@@ -76,7 +76,6 @@ public class FileIO {
         line = linesInFile.get(i);
         // Scan through all records until we reach the foreign key section
         while (!line.equals("ForeignKeys:")) {
-            String newString = line;
             line = line.replaceAll("\\s+","");
             String[] splitString = line.split("\\|");
             records.add(splitString);

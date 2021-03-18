@@ -65,15 +65,18 @@ public class test {
 
 */
         JrSQL newsql = new JrSQL();
-        System.out.println(newsql.run("   uSe iMdb;    "));
+        System.out.println(newsql.run("   create database imdb;    "));
+        System.out.println(newsql.run("   use imdb;    "));
+
 
 //        System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards > 5) AND (nationality == 'British');"));
 
 
-        System.out.println(newsql.run("         SELECT name, age FROM testtable;"));
+        System.out.println(newsql.run("         SELECT * FROM testtable (where age > 5);"));
+        System.out.println(newsql.run("         SELECT name, age FROM testtable where name != 'bob';"));
         //System.out.println(newsql.run("SELECT * FROM testtable WHERE name == 'Hugh Grant';"));
-        System.out.println(newsql.run("SELECT name, age FROM testtable WHERE (awards>5) AND ((nationality<='British') OR (nationality LIKE 'Australian'));"));
-        System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards>=5) AND (nationality=='British');"));
+        //System.out.println(newsql.run("SELECT name, age FROM testtable WHERE (awards>5) AND ((nationality<='British') OR (nationality LIKE 'Australian'));"));
+       // System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards>=5) AND (nationality=='British');"));
 
 
         /*
@@ -84,8 +87,7 @@ public class test {
         prints select statement without where
 
         Need to find -
-        WHERE statements
-        item, operator, searchTerm
+        use search statement to find
 
          */
 

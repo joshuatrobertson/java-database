@@ -9,6 +9,7 @@ public class SelectCommand extends MainCommand {
     Database currentDatabase;
     List<Integer> bracketCount;
     List<Integer> columnIds = new ArrayList<>();
+    List<Integer> rowIds = new ArrayList<>();
     String[] tokens;
     boolean returnAllColumns = false;
 
@@ -57,7 +58,7 @@ public class SelectCommand extends MainCommand {
 
 
     public String run() {
-        bracketCount = getBracketCount(Arrays.toString(tokenizedText));
+        bracketCount = findBracketOrder(Arrays.toString(tokenizedText));
         tokens = createTokens();
         // Get the table to print
         if (!getTableToPrint()) {
@@ -79,11 +80,22 @@ public class SelectCommand extends MainCommand {
         }
 
         // Where statement
-        WhereCommand whereCommand = new WhereCommand(tokens);
+        WhereCommand whereCommand = new WhereCommand(tokens, bracketCount, tableToPrint);
         whereCommand.run();
 
-        String stringToPrint = tableToPrint.printFullTable();
-        return printOk() + "\n" + "tokens = " + Arrays.toString(tokens) + "bracketcount = " + bracketCount;
+        String stringToPrint;
+        // * in SELECT statement
+        if (returnAllColumns) {
+            rowIds = whereCommand.getRowIds();
+            stringToPrint = tableToPrint.printPartialTableAllColumns(rowIds);
+        }
+        else {
+            rowIds = whereCommand.getRowIds();
+            stringToPrint = tableToPrint.printPartialTable(rowIds, columnIds);
+
+        }
+
+        return printOk() + "\n" + stringToPrint;
     }
 
         private String[] createTokens () {
@@ -100,7 +112,7 @@ public class SelectCommand extends MainCommand {
         // Loops through the string to count number of brackets in order to access
         // the order of execution. For example, two items with a number of 2 will get executed together
         // before the result being executed with an item with a number of 1
-        private List<Integer> getBracketCount (String userQuery){
+        private List<Integer> findBracketOrder (String userQuery){
             int bracketCount = 0;
             List<Integer> executionOrder = new ArrayList<>();
 
@@ -121,5 +133,6 @@ public class SelectCommand extends MainCommand {
             }
             return executionOrder;
         }
+
 }
 

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Entry {
+
     private int primaryKey;
     private List<String> elements = new ArrayList<String>();
 

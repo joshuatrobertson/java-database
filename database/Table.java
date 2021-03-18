@@ -19,6 +19,15 @@ public class Table {
         columns.add(columnName);
     }
 
+    public Integer getColumnId(String columnName) {
+        for (String column : columns) {
+            if (column.toLowerCase().equals(columnName)) {
+                return columns.indexOf(column);
+            }
+        }
+        return null;
+    }
+
     // Given a column name, return the column id
     Integer getTableId(String columnName) {
         for (int i = 0; i < columns.size(); i++)
@@ -109,7 +118,7 @@ public class Table {
             builder.append(entries.get(i).getKey() + "\t");
             // Loop through each sub entry to get individual entries
             for (int j = 0; j < entries.get(i).getElements().size(); j++) {
-                builder.append(entries.get(i).getSingleElement(j) + "\t");
+                builder.append(entries.get(i).getSingleElement(j).replace("'", "") + "\t");
             }
             builder.append("\n");
         }
@@ -132,9 +141,39 @@ public class Table {
             builder.append(entries.get(i).getKey() + "\t");
             // Loop through each sub entry to get individual entries
             for (Integer column : columnIds) {
-                builder.append(entries.get(i).getSingleElement(column)+ "\t");
+                builder.append(entries.get(i).getSingleElement(column).replace("'", "") + "\t");
             }
             builder.append("\n");
+        }
+        String finalText = builder.toString();
+        return finalText;
+    }
+
+    // Prints out the table with all keys and only specified columns line by line by using StringBuilder
+    String printPartialTableAllColumns(List<Integer> keys) {
+        StringBuilder builder = new StringBuilder();
+        // Prints out the column titles
+        builder.append("Key" + "\t");
+        for (String c : columns) {
+            builder.append(c + "\t");
+        }
+        builder.append("\n");
+
+        // Loop through keys and see if any match,
+        for (Integer key : keys) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (entries.get(i).getKey() == key) {
+                    // If a key matches print the key
+                    builder.append(entries.get(i).getKey() + "\t");
+                    // Then iterate through the columns and print only the columns given in the list 'Columns'
+                    // Loop through each sub entry to get individual entries
+                    for (int j = 0; j < entries.get(i).getElements().size(); j++) {
+                        builder.append(entries.get(i).getSingleElement(j).replace("'", "") + "\t");
+                    }
+                    builder.append("\n");
+
+                }
+            }
         }
         String finalText = builder.toString();
         return finalText;
@@ -146,7 +185,7 @@ public class Table {
         // Prints out the column titles
         builder.append("Key" + "\t");
         for (Integer column : columnIds) {
-            builder.append(columns.get(column - 1) + "\t");
+            builder.append(columns.get(column) + "\t");
         }
         builder.append("\n");
 
@@ -158,7 +197,7 @@ public class Table {
                     builder.append(entries.get(i).getKey() + "\t");
                     // Then iterate through the columns and print only the columns given in the list 'Columns'
                     for (Integer column : columnIds) {
-                        builder.append(entries.get(i).getSingleElement(column - 1)+ "\t");
+                        builder.append(entries.get(i).getSingleElement(column).replace("'", "") + "\t");
                     }
                 }
             } builder.append("\n");

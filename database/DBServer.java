@@ -33,8 +33,6 @@ class DBServer
 
     private void processNextCommand(BufferedReader socketReader, BufferedWriter socketWriter) throws IOException, NullPointerException
     {
-
-
         String incomingCommand = socketReader.readLine();
         String output = JrSQL.run(incomingCommand);
         socketWriter.write(output);

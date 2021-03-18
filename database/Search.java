@@ -1,16 +1,13 @@
+import java.io.IOException;
 import java.util.*;
 
 public class Search {
-    int columnToSearch;
-    String itemToSearch;
-    Table tableToSearch, newTable;
+    Table tableToSearch;
     List<Integer> searchResults = new ArrayList<Integer>();
     List<Entry> oldEntries;
 
 
-    public Search(int columnToSearch, String itemToSearch, Table tableToSearch) {
-        this.columnToSearch = columnToSearch;
-        this.itemToSearch = itemToSearch;
+    public Search(Table tableToSearch) {
         this.tableToSearch = tableToSearch;
         oldEntries = tableToSearch.getEntries();
     }
@@ -28,18 +25,42 @@ public class Search {
         return columnList;
     }
 
+    List<Integer> searchString(String operator, String searchTerm, Integer columnToSearch) {
+        return switch (operator) {
+            case "like" -> searchLikeEqualsCommand(searchTerm, columnToSearch, "like");
+            case "==" -> searchLikeEqualsCommand(searchTerm, columnToSearch, "==");
+            case "!=" -> searchLikeEqualsCommand(searchTerm, columnToSearch, "!=");
+            default -> throw new InputMismatchException("Invalid operator");
+            };
+        }
 
 
     // Searches for instances of the String itemToSearch and returns the
     // relevant keys
-    List<Integer> searchLikeCommand() {
+    List<Integer> searchLikeEqualsCommand(String itemToSearch, int columnToSearch, String likeOrEquals) {
         // Loop through each record
         for (int i = 0; i < oldEntries.size(); i++) {
             //Search the column of the specific record
             List<String> items = oldEntries.get(i).getElements();
             // Search for instances of the itemToSearch String
-            if (items.get(columnToSearch).contains(itemToSearch)) {
-                searchResults.add(oldEntries.get(i).getKey());
+            if (likeOrEquals.equals("like")) {
+                // get rid of string ( ' )
+                itemToSearch = itemToSearch.replace("'", "");
+                if (items.get(columnToSearch).toLowerCase().contains(itemToSearch)) {
+                    searchResults.add(oldEntries.get(i).getKey());
+                }
+            }
+            // Add if the term matches
+            else if (likeOrEquals.equals("==")) {
+                if (items.get(columnToSearch).toLowerCase().equals(itemToSearch)) {
+                    searchResults.add(oldEntries.get(i).getKey());
+                }
+            }
+            // Add if the term doesn't matches
+            else if (likeOrEquals.equals("!=")) {
+                if (!items.get(columnToSearch).toLowerCase().equals(itemToSearch)) {
+                    searchResults.add(oldEntries.get(i).getKey());
+                }
             }
         }
         return searchResults;
@@ -47,7 +68,7 @@ public class Search {
 
     // Searches the table for instances relevant to the operator and number given
     // in itemToSearch
-    List<Integer> searchWithOperator(String operator) {
+    List<Integer> searchWithOperator(String operator, String itemToSearch, int columnToSearch) {
         float numberFromRecords, numberToSearch = Float.parseFloat(itemToSearch);
 
         // Loop through the records from the table
@@ -84,7 +105,4 @@ public class Search {
             throw new IllegalArgumentException("Invalid operator given");
         }
     }
-
-
-
 }

@@ -10,3 +10,8 @@ change jsql to jrsql
 
 Add each element to a list, pick out each element based on order of bracket array i.e.
 element[bracketArray[i]] = eyc
+
+
+
+Bugs -
+No ' ' messes up search
