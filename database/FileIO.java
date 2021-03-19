@@ -1,8 +1,7 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 // Reads/writes using the schema found in project-files/file_schema.pdf
 public class FileIO {
@@ -52,61 +51,45 @@ public class FileIO {
         return originalString.split("\\|\\|");
     }
 
-    // Returns the primary keys from the file into a String array
-    String[] getForeignKeys() {
-        int i = 3;
-        String line = linesInFile.get(i);
-        // Begin from the records within the text file
-        while (!line.equals("ForeignKeys:")) {
-            i++;
-            line = linesInFile.get(i);
-        }
-        line = linesInFile.get(++i);
-
-        // Remove whitespace and split by '~'
-        line = line.replaceAll("\\s+","");
-        return line.split("~");
-    }
 
     List<String[]> getRecords() {
         List<String[]> records = new ArrayList<>();
         String line;
         // Begin from the records within the text file
         int i = 7;
-        line = linesInFile.get(i);
         // Scan through all records until we reach the foreign key section
-        while (!line.equals("ForeignKeys:")) {
-            line = line.replaceAll("\\s+","");
+        while (i != linesInFile.size()) {
+            line = linesInFile.get(i);
+            line.replaceAll("\\s{2,}"," ");
             String[] splitString = line.split("\\|");
             records.add(splitString);
             i++;
-            line = linesInFile.get(i);
         }
         return records;
     }
 
 
-
-    void createEmptyFile(String tableName) {
-        try {
-            File myObj = new File("files" + File.separator + tableName + ".jsql");
-            if (myObj.createNewFile()) { System.out.println("File created: " + myObj.getName()); }
-            else { System.out.println("File already exists."); }
-        } catch (IOException e) {
-            System.out.println("Error with file writing");
-            e.printStackTrace();
-        }
+    void createEmptyTable(String tableName, String databaseName, String[] columns) {
+            try {
+                FileWriter writer = new FileWriter("files" + File.separator + databaseName + File.separator + tableName + ".jsql");
+                writer.write("TableName:\n" + tableName);
+                writeItem(writer, columns, "|||", "\nColumns");
+                writer.close();
+                System.out.println("Successfully wrote to " + databaseName + "/" + tableName + ".jsql");
+            } catch (IOException e) {
+                System.out.println("Error creating file.");
+                e.printStackTrace();
+            }
     }
 
     // Create a schema file
-    public void createSchemaFile(String tableName, String databaseName) {
+    public void writeFromTableInMemory(String tableName, String databaseName, Table tableToPrint) {
         try {
             FileWriter writer = new FileWriter("files" + File.separator + databaseName + File.separator + tableName + ".jsql");
             writer.write("TableName:\n" + tableName);
-            writeItem(writer, getColumnHeaders(), "|||", "\nColumns");
-            writeItem(writer, getPrimaryKeys(), "||", "\nPrimaryKeys");
-            writeRecords(writer, getRecords());
-            writeItem(writer, getForeignKeys(), "~", "ForeignKeys");
+            writeItem(writer, tableToPrint.getColumnHeaders(), "|||", "\nColumns");
+            writeItem(writer, tableToPrint.getPrimaryKeys(), "||", "\nPrimaryKeys");
+            writeRecords(writer, tableToPrint.getRecords(), tableToPrint.getNumberOfColumns());
             writer.close();
             System.out.println("Successfully wrote to " + databaseName + "/" + tableName + ".jsql");
         } catch (IOException e) {
@@ -117,14 +100,24 @@ public class FileIO {
 
 
     // Write the record/s to the file with a '|' deliminator
-    private void writeRecords(FileWriter writer, List<String[]> Records) throws IOException {
+    private void writeRecords(FileWriter writer, List<String[]> Records, int columns) throws IOException {
         writer.write("\nRecords:\n");
         for (String[] record : Records) {
-            for (int i = 0; i < getColumnHeaders().length; i++) {
+            for (int i = 0; i < columns; i++) {
                 writer.write(record[i] + " | ");
             }
             writer.write("\n");
         }
+    }
+
+    public void addRecord(String record, String tableName, String databaseName) {
+        try {
+            FileWriter writer = new FileWriter("files" + File.separator + databaseName + File.separator + tableName + ".jsql");
+
+        } catch (IOException e) {
+        System.out.println("Error updating table");
+        e.printStackTrace();
+    }
     }
 
     // Write the items to the file with a specified deliminator
@@ -136,7 +129,6 @@ public class FileIO {
     }
 
     public void createDatabaseFolder(String databaseName) {
-
         if (!checkFolderExists(databaseName)) {
             try {
                 Files.createDirectory(Paths.get("files" + File.separator + databaseName));
@@ -145,6 +137,29 @@ public class FileIO {
             }
         }
     }
+
+    public void dropDatabase(File file) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                if (! Files.isSymbolicLink(f.toPath())) {
+                    dropDatabase(f);
+                }
+            }
+        }
+        file.delete();
+    }
+
+    public void dropTable(String tableName, String databaseName) {
+        File tableToDelete = new File("files" + File.separator + databaseName + File.separator + tableName + ".jsql");
+        if (tableToDelete.delete()) {
+            System.out.println("Deleted the file: " + tableToDelete.getName());
+        } else {
+            System.out.println("Failed to delete the file.");
+        }
+    }
+
+
 
 
     public boolean checkFolderExists(String folderName) {
@@ -160,7 +175,7 @@ public class FileIO {
         File dir = new File("files" + File.separator + database);
         File[] directoryListing = dir.listFiles();
         List<Table> tables = new ArrayList<>();
-            for (File child : directoryListing) {
+        for (File child : directoryListing) {
                 readFile(child.toString());
                 tables.add(readInFileToTable(database));
             }

@@ -1,8 +1,8 @@
 import java.util.HashMap;
 
-public class CreateTable extends MainCommand {
+public class CreateDatabaseCommand extends MainCommand {
 
-    public CreateTable(String[] incomingCommand, HashMap databases) {
+    public CreateDatabaseCommand(String[] incomingCommand, HashMap<String, Database> databases) {
         super.tokenizedText = incomingCommand;
         super.databases = databases;
     }

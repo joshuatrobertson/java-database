@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Locale;
 
 public class Database {
 
@@ -11,6 +12,8 @@ public class Database {
         this.databaseName = databaseName;
         file.createDatabaseFolder(databaseName);
     }
+
+    public void removeTable(String tableName) { tableList.remove(tableName); }
 
     // Adds a table to the Table ArrayList
     void addTable(Table table) {
@@ -27,5 +30,7 @@ public class Database {
         return tableList.get(tableName); }
 
     public String getDatabaseName() { return databaseName; }
+
+    public boolean checkTableExists(String Tablename) { return tableList.containsKey(Tablename); }
 
 }

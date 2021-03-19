@@ -15,3 +15,16 @@ element[bracketArray[i]] = eyc
 
 Bugs -
 No ' ' messes up search
+
+
+Alter add
+Gets table and adds in attribute (attribute name) to table
+
+Alter remove
+Delete the column in table->columns
+Delete the element in entries[i]
+
+INSERT
+Giving wrong number of attributes return error
+
+Change order of command inputs

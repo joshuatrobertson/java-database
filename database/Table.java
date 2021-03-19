@@ -21,7 +21,7 @@ public class Table {
 
     public Integer getColumnId(String columnName) {
         for (String column : columns) {
-            if (column.toLowerCase().equals(columnName)) {
+            if (column.toLowerCase().trim().equals(columnName)) {
                 return columns.indexOf(column);
             }
         }
@@ -59,6 +59,28 @@ public class Table {
         this.primaryKey = primaryKey;
     }
 
+    public String[] getColumnHeaders() { return columns.toArray(new String[columns.size()]) ; }
+
+    public String[] getPrimaryKeys() {
+        String[] primaryKeys = new String[entries.size()];
+
+        for (int i = 0; i < primaryKeys.length; i++) {
+            int entry;
+            entry = entries.get(i).getKey();
+            primaryKeys[i] = Integer.toString(entry);
+        }
+        return primaryKeys ;
+    }
+
+    List<String[]> getRecords() {
+        List<String[]> records = new ArrayList<>();
+
+        for (Entry entry : entries) {
+            records.add(entry.getElementsAsString());
+        }
+        return records;
+    }
+
     int getNumberOfColumns() { return columns.size(); }
 
     int getNumberOfEntries() { return entries.size(); }
@@ -87,11 +109,14 @@ public class Table {
         }
     }
 
+    public boolean checkAttributeExists(String attributeName) { return columns.contains(attributeName); }
+
     // Deletes a row with the associated data
-    void deleteRow(int rowNumber) {
-        columns.remove(rowNumber);
-        for (int i = 0; i < entries.size(); i++) {
-            entries.remove(rowNumber);
+    void deleteAttribute(String attributeName) {
+        int column = getColumnId(attributeName);
+        columns.remove(column);
+        for (Entry entry : entries) {
+            entry.removeElement(column);
         }
     }
 
@@ -115,10 +140,15 @@ public class Table {
         // Loop through each entry
         for (int i = 0; i < entries.size(); i++) {
             // Add the keys
-            builder.append(entries.get(i).getKey() + "\t");
+            builder.append(entries.get(i).getKey()).append("\t");
             // Loop through each sub entry to get individual entries
             for (int j = 0; j < entries.get(i).getElements().size(); j++) {
-                builder.append(entries.get(i).getSingleElement(j).replace("'", "") + "\t");
+                if (!(entries.get(i).getSingleElement(j).replace("'", "")).trim().equals("null")) {
+                    builder.append(entries.get(i).getSingleElement(j).replace("'", "").trim() + "\t");
+                }
+                else {
+                    builder.append("\t");
+                }
             }
             builder.append("\n");
         }
@@ -141,7 +171,12 @@ public class Table {
             builder.append(entries.get(i).getKey() + "\t");
             // Loop through each sub entry to get individual entries
             for (Integer column : columnIds) {
-                builder.append(entries.get(i).getSingleElement(column).replace("'", "") + "\t");
+                if (!(entries.get(i).getSingleElement(column).replace("'", "")).trim().equals("null")) {
+                    builder.append(entries.get(i).getSingleElement(column).replace("'", "").trim() + "\t");
+                }
+                else {
+                    builder.append("\t");
+                }
             }
             builder.append("\n");
         }
@@ -168,10 +203,13 @@ public class Table {
                     // Then iterate through the columns and print only the columns given in the list 'Columns'
                     // Loop through each sub entry to get individual entries
                     for (int j = 0; j < entries.get(i).getElements().size(); j++) {
-                        builder.append(entries.get(i).getSingleElement(j).replace("'", "") + "\t");
+                        if (!(entries.get(i).getSingleElement(j).replace("'", "")).trim().equals("null")) {
+                            builder.append(entries.get(i).getSingleElement(j).replace("'", "").trim() + "\t");
+                        } else {
+                            builder.append("\t");
+                        }
                     }
                     builder.append("\n");
-
                 }
             }
         }
@@ -197,7 +235,12 @@ public class Table {
                     builder.append(entries.get(i).getKey() + "\t");
                     // Then iterate through the columns and print only the columns given in the list 'Columns'
                     for (Integer column : columnIds) {
-                        builder.append(entries.get(i).getSingleElement(column).replace("'", "") + "\t");
+                        if (!(entries.get(i).getSingleElement(column).replace("'", "")).trim().equals("null")) {
+                            builder.append(entries.get(i).getSingleElement(column).replace("'", "").trim() + "\t");
+                        }
+                        else {
+                            builder.append("\t");
+                        }
                     }
                 }
             } builder.append("\n");

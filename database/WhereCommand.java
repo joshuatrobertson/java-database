@@ -11,13 +11,13 @@ public class WhereCommand extends MainCommand {
     String[] incomingCommand;
     Table tableToPrint;
 
-    public WhereCommand(String[] incomingCommand, List<Integer> bracketOrder, Table tableToPrint) {
+    public WhereCommand(String[] incomingCommand, Table tableToPrint) {
         this.incomingCommand = incomingCommand;
-        this.bracketOrder = bracketOrder;
         this.tableToPrint = tableToPrint;
     }
 
     public void run() {
+        bracketOrder = findBracketOrder(Arrays.toString(tokenizedText));
         splitText();
         findOperators();
     }
@@ -51,7 +51,14 @@ public class WhereCommand extends MainCommand {
         }
     }
 
-
+    public boolean checkAttributesExist() {
+        for (String i : item) {
+            if(!tableToPrint.checkAttributeExists(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 
     public List<Integer> getRowIds() {
@@ -71,5 +78,30 @@ public class WhereCommand extends MainCommand {
             }
         }
         return columnIds;
+    }
+
+    // Loops through the string to count number of brackets in order to access
+    // the order of execution. For example, two items with a number of 2 will get executed together
+    // before the result being executed with an item with a number of 1
+    private List<Integer> findBracketOrder (String userQuery){
+        int bracketCount = 0;
+        List<Integer> executionOrder = new ArrayList<>();
+
+        for (int i = 0; i < userQuery.length(); i++) {
+            char c = userQuery.charAt(i);
+            if (c == '(') {
+                // Increase bracket count
+                bracketCount++;
+            } else if (userQuery.charAt(i) == ')') {
+                executionOrder.add(bracketCount);
+                // Closing bracket and therefore loop through the query until a non ')'
+                // is reached
+                while (userQuery.charAt(i) == ')') {
+                    i++;
+                    bracketCount--;
+                }
+            }
+        }
+        return executionOrder;
     }
 }

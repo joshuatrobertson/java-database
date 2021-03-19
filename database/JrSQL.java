@@ -18,7 +18,7 @@ public class JrSQL {
         return returnRelevantCommand(command);
     }
 
-    // Splits the text up an removes any whitespace
+    // Splits the text up and removes any whitespace
     private String[] tokenizeText(String originalText) {
         String lowerCase = originalText.toLowerCase().trim();
         return lowerCase.split("\\s+");
@@ -37,22 +37,26 @@ public class JrSQL {
                 setCurrentDatabase(useCommand.getCurrentDatabase());
                 return useCommand.run();
             case CREATE_TABLE:
-                CreateDatabase createTable = new CreateDatabase(tokenizedText, databases);
+                CreateTableCommand createTable = new CreateTableCommand(tokenizedText, databases, currentDatabase);
                 return createTable.run();
             case CREATE_DATABASE:
-                CreateDatabase createDatabase = new CreateDatabase(tokenizedText, databases);
+                CreateDatabaseCommand createDatabase = new CreateDatabaseCommand(tokenizedText, databases);
                 return createDatabase.run();
             case DROP:
-                return dropCommand();
+                DropCommand dropCommand = new DropCommand(tokenizedText, databases, currentDatabase);
+                return dropCommand.run();
             case ALTER:
-                return alterCommand();
+                AlterCommand alterCommand = new AlterCommand(tokenizedText, databases, currentDatabase);
+                return alterCommand.run();
             case INSERT:
-                return insertCommand();
+                InsertCommand insertCommand = new InsertCommand(databases, tokenizedText, currentDatabase);
+                return insertCommand.run();
             case SELECT:
-                SelectCommand selectCommand = new SelectCommand(tokenizedText, getDatabaseByName(currentDatabase));
+                SelectCommand selectCommand = new SelectCommand(databases, tokenizedText, getDatabaseByName(currentDatabase));
                 return selectCommand.run();
             case UPDATE:
-                return updateCommand();
+                UpdateCommand updateCommand = new UpdateCommand(tokenizedText, databases, currentDatabase);
+                return updateCommand.run();
             case DELETE:
                 return deleteCommand();
             case JOIN:
@@ -63,12 +67,6 @@ public class JrSQL {
                 return "[ERROR]";
         }
         return "No command found!";
-    }
-
-
-
-    private String dropCommand() {
-        return "[OK]";
     }
 
     private String alterCommand() {

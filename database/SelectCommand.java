@@ -13,14 +13,15 @@ public class SelectCommand extends MainCommand {
     String[] tokens;
     boolean returnAllColumns = false;
 
-    public SelectCommand(String[] incomingCommand, Database currentDatabase) {
+    public SelectCommand(HashMap<String, Database> databases, String[] incomingCommand, Database currentDatabase) {
         super.tokenizedText = incomingCommand;
         this.currentDatabase = currentDatabase;
+        super.databases = databases;
     }
 
     // Assign the table to the Table tableToPrint and return true, return false if it does not exist
     private boolean getTableToPrint() {
-        // The table will always be the last item
+        // The table will always be the first item
         String tableName = tokens[0];
         tableName = tableName.split("from")[1].trim();
         if ((tableToPrint = currentDatabase.getTable(tableName)) != null){
@@ -58,7 +59,6 @@ public class SelectCommand extends MainCommand {
 
 
     public String run() {
-        bracketCount = findBracketOrder(Arrays.toString(tokenizedText));
         tokens = createTokens();
         // Get the table to print
         if (!getTableToPrint()) {
@@ -80,9 +80,9 @@ public class SelectCommand extends MainCommand {
         }
 
         // Where statement
-        WhereCommand whereCommand = new WhereCommand(tokens, bracketCount, tableToPrint);
-        whereCommand.run();
+        WhereCommand whereCommand = new WhereCommand(tokens, tableToPrint);
 
+        whereCommand.run();
         String stringToPrint;
         // * in SELECT statement
         if (returnAllColumns) {
@@ -92,7 +92,6 @@ public class SelectCommand extends MainCommand {
         else {
             rowIds = whereCommand.getRowIds();
             stringToPrint = tableToPrint.printPartialTable(rowIds, columnIds);
-
         }
 
         return printOk() + "\n" + stringToPrint;
@@ -109,30 +108,7 @@ public class SelectCommand extends MainCommand {
             return finalArray;
         }
 
-        // Loops through the string to count number of brackets in order to access
-        // the order of execution. For example, two items with a number of 2 will get executed together
-        // before the result being executed with an item with a number of 1
-        private List<Integer> findBracketOrder (String userQuery){
-            int bracketCount = 0;
-            List<Integer> executionOrder = new ArrayList<>();
 
-            for (int i = 0; i < userQuery.length(); i++) {
-                char c = userQuery.charAt(i);
-                if (c == '(') {
-                    // Increase bracket count
-                    bracketCount++;
-                } else if (userQuery.charAt(i) == ')') {
-                    executionOrder.add(bracketCount);
-                    // Closing bracket and therefore loop through the query until a non ')'
-                    // is reached
-                    while (userQuery.charAt(i) == ')') {
-                        i++;
-                        bracketCount--;
-                    }
-                }
-            }
-            return executionOrder;
-        }
 
 }
 

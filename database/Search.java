@@ -58,7 +58,7 @@ public class Search {
             }
             // Add if the term doesn't matches
             else if (likeOrEquals.equals("!=")) {
-                if (!items.get(columnToSearch).toLowerCase().equals(itemToSearch)) {
+                if (!items.get(columnToSearch).toLowerCase().replace("'", "").trim().equals(itemToSearch)) {
                     searchResults.add(oldEntries.get(i).getKey());
                 }
             }

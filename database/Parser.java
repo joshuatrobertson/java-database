@@ -18,7 +18,7 @@ public class Parser {
         }
 
         // Use command
-        if (userCommand[0].equals("use") && (userCommand.length == 2)) {
+        if (userCommand[0].equals("use") && (userCommand.length <= 3)) {
             return Command.USE;
         }
 
@@ -28,20 +28,18 @@ public class Parser {
         }
 
         // Create database command
-        if (testFirstTwoCommands("create", "database") &&
-                        userCommand.length == 3) {
+        if (testFirstTwoCommands("create", "database")) {
             return Command.CREATE_DATABASE;
         }
 
         // Drop command
-        if (userCommand[0].equals("drop") && userCommand.length == 2) {
+        if (userCommand[0].equals("drop") && userCommand[1].equals("table") | userCommand[1].equals("database") &&
+                userCommand.length <= 4) {
             return Command.DROP;
         }
 
         // Alter command
-        if (testFirstTwoCommands("alter", "table") &&
-                (userCommand[3].equals("add") || userCommand[3].equals("drop") &&
-                        userCommand.length == 5)) {
+        if (testFirstTwoCommands("alter", "table") && userCommand.length <= 6) {
             return Command.ALTER;
         }
 

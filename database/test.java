@@ -65,15 +65,39 @@ public class test {
 
 */
         JrSQL newsql = new JrSQL();
-        System.out.println(newsql.run("   create database imdb;    "));
-        System.out.println(newsql.run("   use imdb;    "));
+        System.out.println(newsql.run("   create database imdb ;    "));
+        System.out.println(newsql.run("   use imdb ;    "));
+        System.out.println(newsql.run("   creaTe TablE testtablenumber2(Name, age, d.o.b.);    "));
+        System.out.println(newsql.run("   insert into testtablenumber2 values ('josh', 25, 08.12.1992);    "));
+        System.out.println(newsql.run("   insert into testtablenumber2 values ('emily', 30, 01.02.1934);    "));
+        System.out.println(newsql.run("   insert into testtablenumber2 values ('peter', 19, 05.11.1994);    "));
+
+
+
+        System.out.println(newsql.run("   select * from testtablenumber2 where name != josh;    "));
+       // System.out.println(newsql.run("   update testtablenumber2 SET age = 5, d.o.b. = 09.10.2020 where name == peter  ;    "));
+        //System.out.println(newsql.run("   update testtablenumber2123 SET age = 5, d.o.b. = 09.10.2020 where name != peter  ;    "));
+
+
+
+
+
+
+        //System.out.println(newsql.run("   insert into testtablenumber2 values ('josh actor', 25, 08.12.1992, MALE);    "));
+
+
+
+
+
+
+
 
 
 //        System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards > 5) AND (nationality == 'British');"));
 
 
-        System.out.println(newsql.run("         SELECT * FROM testtable (where age > 5);"));
-        System.out.println(newsql.run("         SELECT name, age FROM testtable where name != 'bob';"));
+        //System.out.println(newsql.run("         SELECT name FROM testtable (where name like r);"));
+        //System.out.println(newsql.run("         SELECT name, age FROM testtable where name != 'bob';"));
         //System.out.println(newsql.run("SELECT * FROM testtable WHERE name == 'Hugh Grant';"));
         //System.out.println(newsql.run("SELECT name, age FROM testtable WHERE (awards>5) AND ((nationality<='British') OR (nationality LIKE 'Australian'));"));
        // System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards>=5) AND (nationality=='British');"));
