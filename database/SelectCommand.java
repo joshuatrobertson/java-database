@@ -59,7 +59,9 @@ public class SelectCommand extends MainCommand {
 
 
     public String run() {
-        tokens = createTokens();
+        if (currentDatabase == null) { return printError("No database selected"); }
+        if (!tokenizedText[2].equals("from")) { return printError("Missing or incorrect 'from' statement"); }
+        tokens = createTokens(tokenizedText);
         // Get the table to print
         if (!getTableToPrint()) {
             return printError("Table does not exist");
@@ -96,19 +98,6 @@ public class SelectCommand extends MainCommand {
 
         return printOk() + "\n" + stringToPrint;
     }
-
-        private String[] createTokens () {
-            // Splits the text up by brackets
-            String startingString = Arrays.toString(tokenizedText);
-
-            startingString = startingString.replace(",", "");
-            startingString = startingString.replace("[", "");
-            startingString = startingString.replace(";]", "");
-            String[] finalArray = startingString.split("[\\(||\\)|]|where");
-            return finalArray;
-        }
-
-
 
 }
 

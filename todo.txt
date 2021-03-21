@@ -9,7 +9,7 @@ change jsql to jrsql
 
 
 Add each element to a list, pick out each element based on order of bracket array i.e.
-element[bracketArray[i]] = eyc
+element[bracketArray[i]] = etc
 
 
 
@@ -27,4 +27,12 @@ Delete the element in entries[i]
 INSERT
 Giving wrong number of attributes return error
 
-Change order of command inputs
+UPDATE
+make updateTable() more efficient (not loop throguh each keys - instead loop until reach one)
+
+WHERE
+Add support for boolean operators
+
+
+
+

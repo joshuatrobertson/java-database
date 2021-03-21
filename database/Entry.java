@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Entry {
@@ -9,9 +10,7 @@ public class Entry {
     public Entry(int key, String [] records) {
         primaryKey = key;
         // Add in the entries and column names
-        for (int i = 0; i < records.length; i++) {
-            this.elements.add(records[i]);
-        }
+        this.elements.addAll(Arrays.asList(records));
     }
 
 

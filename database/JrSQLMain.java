@@ -1,13 +1,13 @@
 import java.util.*;
 
-public class JrSQL {
+public class JrSQLMain {
 
-    private String currentDatabase;
+    private String currentDatabase = null;
     private final HashMap<String, Database> databases = new HashMap<>();
     private String[] tokenizedText;
     FileIO file = new FileIO();
 
-    public JrSQL() {
+    public JrSQLMain() {
 
     }
 
@@ -58,7 +58,8 @@ public class JrSQL {
                 UpdateCommand updateCommand = new UpdateCommand(tokenizedText, databases, currentDatabase);
                 return updateCommand.run();
             case DELETE:
-                return deleteCommand();
+                DeleteCommand deleteCommand = new DeleteCommand(tokenizedText, databases, currentDatabase);
+                return deleteCommand.run();
             case JOIN:
                 return joinCommand();
             case MISSING_SEMI_COLON:

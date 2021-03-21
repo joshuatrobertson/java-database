@@ -3,7 +3,7 @@ import java.net.*;
 
 class DBServer
 {
-    JrSQL JrSQL = new JrSQL();
+    JrSQLMain JrSQL = new JrSQLMain();
 
     public DBServer(int portNumber)
     {

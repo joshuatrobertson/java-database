@@ -36,7 +36,7 @@ public class AlterCommand extends MainCommand {
     private String alterTableAdd() {
         if (checkAttributeExists()) { return printError("Attribute already exists"); }
         databases.get(currentDatabase).getTable(currentTable).addNewColumn(attributeName);
-        file.writeFromTableInMemory(currentTable, currentDatabase, databases.get(currentDatabase).getTable(currentTable));
+        writeTableToMemory();
         return printOk();
     }
 

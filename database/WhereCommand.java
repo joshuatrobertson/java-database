@@ -43,7 +43,9 @@ public class WhereCommand extends MainCommand {
         }
 
     private void findOperators() {
-        String joinedCommand = Arrays.toString(incomingCommand);
+        String[] split = Arrays.toString(incomingCommand).split(",");
+        split[0] = "";
+        String joinedCommand = Arrays.toString(split);
         Matcher matcher = Pattern.compile("(!=)|(>=)|(<=)|(==)|[>=<]|(like)")
                 .matcher(joinedCommand);
         while (matcher.find()) {
@@ -104,4 +106,6 @@ public class WhereCommand extends MainCommand {
         }
         return executionOrder;
     }
+
+    public List<String> getOperators() { return operator; }
 }

@@ -138,15 +138,18 @@ public class FileIO {
         }
     }
 
+    // Delete every item within the folder before deleting the folder
     public void dropDatabase(File file) {
-        File[] contents = file.listFiles();
-        if (contents != null) {
-            for (File f : contents) {
+        File[] fileContents = file.listFiles();
+        if (fileContents != null) {
+            // Loop through the individual files
+            for (File f : fileContents) {
                 if (! Files.isSymbolicLink(f.toPath())) {
                     dropDatabase(f);
                 }
             }
         }
+        // Delete the directory
         file.delete();
     }
 

@@ -46,19 +46,19 @@ public class Search {
             if (likeOrEquals.equals("like")) {
                 // get rid of string ( ' )
                 itemToSearch = itemToSearch.replace("'", "");
-                if (items.get(columnToSearch).toLowerCase().contains(itemToSearch)) {
+                if (items.get(columnToSearch).toLowerCase().contains(itemToSearch.replace("'", ""))) {
                     searchResults.add(oldEntries.get(i).getKey());
                 }
             }
             // Add if the term matches
             else if (likeOrEquals.equals("==")) {
-                if (items.get(columnToSearch).toLowerCase().equals(itemToSearch)) {
+                if (items.get(columnToSearch).replace("'", "").toLowerCase().trim().equals(itemToSearch.replace("'", ""))) {
                     searchResults.add(oldEntries.get(i).getKey());
                 }
             }
             // Add if the term doesn't matches
             else if (likeOrEquals.equals("!=")) {
-                if (!items.get(columnToSearch).toLowerCase().replace("'", "").trim().equals(itemToSearch)) {
+                if (!items.get(columnToSearch).replace("'", "").toLowerCase().trim().equals(itemToSearch.replace("'", ""))) {
                     searchResults.add(oldEntries.get(i).getKey());
                 }
             }

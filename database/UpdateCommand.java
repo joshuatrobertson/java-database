@@ -8,7 +8,11 @@ public class UpdateCommand extends MainCommand {
     String[] tokens;
     String[] incomingCommand;
     Table tableToUpdate;
-    String[] setValues;
+    String[] whereValues;
+    List<Integer> updateColumns;
+    List<String> updateItems;
+    List<Integer> keysToReturn;
+
 
 
     public UpdateCommand(String[] incomingCommand, HashMap databases, String currentDatabase) {
@@ -20,7 +24,7 @@ public class UpdateCommand extends MainCommand {
     }
 
     public String run() {
-        tokens = createTokens();
+        tokens = createTokens(tokenizedText);
         if (!getTableToPrint()) {
             return printError("Table does not exist");
         }
@@ -29,40 +33,85 @@ public class UpdateCommand extends MainCommand {
         return getKeysAndRun();
     }
 
-    private void getValues() { setValues = tokens[1].split(" "); }
+    private void getValues() { whereValues = tokens[1].split(" "); }
 
-    private String[] createTokens () {
-        // Splits the text up by brackets
-        String startingString = Arrays.toString(tokenizedText);
-
-        startingString = startingString.replace(",", "");
-        startingString = startingString.replace("[", "");
-        startingString = startingString.replace(";]", "");
-        String[] finalArray = startingString.split("[\\(||\\)|]|where|set");
-        return finalArray;
-    }
 
     // Assign the table to the Table tableToPrint and return true, return false if it does not exist
     private boolean getTableToPrint() {
         // The table will always be the first item
         String tableName = tokens[0];
         tableName = tableName.split("update")[1].trim();
-        if ((tableToUpdate = databases.get(currentDatabase).getTable(tableName)) != null){
+        if ((tableToUpdate = databases.get(currentDatabase).getTable(currentTable)) != null){
             return true;
         }
         return false;
     }
 
     private String getKeysAndRun() {
+        String tokensAfterWhere = Arrays.toString(tokens);
+        tokensAfterWhere = tokens[1];
+        String[] tokensArray;
+        tokensAfterWhere = tokensAfterWhere.replace("]", "").trim();
+        tokensArray = tokensAfterWhere.split("(and)|(or)|(like)");
         WhereCommand whereCommand = new WhereCommand(tokens, tableToUpdate);
-        List<Integer> keysToReturn = new ArrayList<>();
         if (!whereCommand.checkAttributesExist()) {
             return printError("Attributes do not exist");
         }
-        keysToReturn = whereCommand.getRowIds();
-
         whereCommand.run();
+        keysToReturn = new ArrayList<>();
+        keysToReturn = whereCommand.getRowIds();
+        getupdateItems();
 
+
+        return updateTable();
+    }
+
+    private void getupdateItems() {
+        updateItems = new ArrayList<>();
+        updateColumns = new ArrayList<>();
+        String tokenSplit = Arrays.toString(tokenizedText);
+        String[] newTokens = tokens[0].split("set");
+        String tokenString = newTokens[1];
+        String tokenStringSplit[] = tokenString.split("=| ");
+        int count = 0;
+        for (String s : tokenStringSplit) {
+            // The items will be in the order item to update, update value and therefore those with an even number position
+            // will always be the item and those with odd will be the value
+            if (!s.isBlank()) {
+                if (count % 2 == 0) {
+                    // If even number find the column position
+                    int columnNumber = tableToUpdate.getColumnId(s);
+                    updateColumns.add(columnNumber);
+                }
+                else {
+                    updateItems.add(s);
+                }
+                count++;
+            }
+        }
+
+    }
+    private String updateTable() {
+        // Loop through each entry that needs to be updated
+        for (Integer key : keysToReturn) {
+                // Update each column
+                for (int i = 0; i < tableToUpdate.getEntries().size(); i++) {
+                    if (tableToUpdate.getEntries().get(i).getKey() == key) {
+                        // Update single value in table
+                        if (updateColumns.size() == 1) {
+                            tableToUpdate.getEntries().get(i).updateElement(updateColumns.get(0), updateItems.get(0));
+                        }
+                        else {
+                            // update > 1 values, therefore cycle through ArrayList updateColumns && updateItems
+                            for (Integer column : updateColumns) {
+                                tableToUpdate.getEntries().get(i).updateElement(updateColumns.get(column), updateItems.get(column));
+                            }
+                        }
+                }
+            }
+        }
+        // Write the table back to memory
+        writeTableToMemory();
         return printOk();
     }
 }

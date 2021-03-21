@@ -64,19 +64,19 @@ public class test {
         testTable.printPartialTable(keysToReturn, columnsToReturn);
 
 */
-        JrSQL newsql = new JrSQL();
+        JrSQLMain newsql = new JrSQLMain();
         System.out.println(newsql.run("   create database imdb ;    "));
         System.out.println(newsql.run("   use imdb ;    "));
         System.out.println(newsql.run("   creaTe TablE testtablenumber2(Name, age, d.o.b.);    "));
         System.out.println(newsql.run("   insert into testtablenumber2 values ('josh', 25, 08.12.1992);    "));
         System.out.println(newsql.run("   insert into testtablenumber2 values ('emily', 30, 01.02.1934);    "));
-        System.out.println(newsql.run("   insert into testtablenumber2 values ('peter', 19, 05.11.1994);    "));
+       System.out.println(newsql.run("   insert into testtablenumber2 values ('peter', 19, 05.11.1994);    "));
 
 
 
-        System.out.println(newsql.run("   select * from testtablenumber2 where name != josh;    "));
-       // System.out.println(newsql.run("   update testtablenumber2 SET age = 5, d.o.b. = 09.10.2020 where name == peter  ;    "));
-        //System.out.println(newsql.run("   update testtablenumber2123 SET age = 5, d.o.b. = 09.10.2020 where name != peter  ;    "));
+       // System.out.println(newsql.run("   select * from testtablenumber2 where name == 'josh';    "));
+       System.out.println(newsql.run("   update testtablenumber2 SET age =99 where (age != 25) ;    "));
+        //System.out.println(newsql.run("   delete from testtablenumber2 where age>20  ;    "));
 
 
 
