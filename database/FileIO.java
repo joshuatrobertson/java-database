@@ -9,7 +9,7 @@ public class FileIO {
     public FileIO() {
     }
 
-    private List<String> linesInFile = new ArrayList<>();
+    private final List<String> linesInFile = new ArrayList<>();
 
 
     public void readFile(String fileName) {
@@ -60,7 +60,7 @@ public class FileIO {
         // Scan through all records until we reach the foreign key section
         while (i != linesInFile.size()) {
             line = linesInFile.get(i);
-            line.replaceAll("\\s{2,}"," ");
+            line = line.replaceAll("\\s{2,}"," ");
             String[] splitString = line.split("\\|");
             records.add(splitString);
             i++;
@@ -110,16 +110,6 @@ public class FileIO {
         }
     }
 
-    public void addRecord(String record, String tableName, String databaseName) {
-        try {
-            FileWriter writer = new FileWriter("files" + File.separator + databaseName + File.separator + tableName + ".jsql");
-
-        } catch (IOException e) {
-        System.out.println("Error updating table");
-        e.printStackTrace();
-    }
-    }
-
     // Write the items to the file with a specified deliminator
     private void writeItem(FileWriter writer, String[] items, String deliminator, String itemToWrite) throws IOException {
         writer.write(itemToWrite + ":\n");
@@ -150,7 +140,13 @@ public class FileIO {
             }
         }
         // Delete the directory
-        file.delete();
+        try {
+            if (!file.delete()) {
+                System.out.println("Error deleting file");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void dropTable(String tableName, String databaseName) {
@@ -163,29 +159,28 @@ public class FileIO {
     }
 
 
-
-
     public boolean checkFolderExists(String folderName) {
         File f = new File("files" + File.separator + folderName);
-        if (f.exists() && f.isDirectory()) {
-            return true;
-        }
-        return false;
+        return f.exists() && f.isDirectory();
     }
 
     public List<Table> readTablesFromDatabase(String database) {
-
         File dir = new File("files" + File.separator + database);
         File[] directoryListing = dir.listFiles();
         List<Table> tables = new ArrayList<>();
-        for (File child : directoryListing) {
-                readFile(child.toString());
-                tables.add(readInFileToTable(database));
-            }
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                    readFile(child.toString());
+                    tables.add(readInFileToTable());
+                }
+        }
+        else {
+            System.out.println("Directory returned null");
+        }
         return tables;
     }
 
-    public Table readInFileToTable(String databaseName) {
+    public Table readInFileToTable() {
         String tableName = getTableName();
         Table newTable = new Table(tableName);
         int key = 0;

@@ -2,10 +2,9 @@ import java.util.*;
 
 public class Table {
 
-    private String tableName;
-    private List<String> columns = new ArrayList<String>();
-    private List<Entry> entries = new ArrayList<Entry>();
-    private HashMap<String, Table> tableList = new HashMap<>();
+    private final String tableName;
+    private final List<String> columns = new ArrayList<>();
+    private final List<Entry> entries = new ArrayList<>();
     private int primaryKey;
 
     public Table(String tableName) {
@@ -19,9 +18,11 @@ public class Table {
         columns.add(columnName);
     }
 
+    public List<String> getColumns() { return columns; }
+
     public Integer getColumnId(String columnName) {
         for (String column : columns) {
-            if (column.toLowerCase().trim().equals(columnName)) {
+            if (column.toLowerCase().trim().replace(";", "").equals(columnName)) {
                 return columns.indexOf(column);
             }
         }
@@ -40,6 +41,16 @@ public class Table {
         return null;
     }
 
+    // Iterate through the entries and add each one contained within [columnName] to an integer array
+    public String[] getForeignKeys(String columnName) {
+        String[] items = new String[entries.size()];
+        int column = getColumnId(columnName);
+        for (int i = 0; i < entries.size(); i++) {
+            items[i] = entries.get(i).getSingleElement(column).trim();
+        }
+        return items;
+    }
+
 
     // When a column is added after the table has been initialised, fill
     // the row with null values
@@ -48,8 +59,8 @@ public class Table {
         columns.add(columnName);
         // Fill the array with 'void' so that the list can be accessed
         // at that index
-        for (int i = 0; i < entries.size(); i++){
-            entries.get(i).addNewNullElement();
+        for (Entry entry : entries) {
+            entry.addNewNullElement();
         }
     }
 
@@ -59,7 +70,7 @@ public class Table {
         this.primaryKey = primaryKey;
     }
 
-    public String[] getColumnHeaders() { return columns.toArray(new String[columns.size()]) ; }
+    public String[] getColumnHeaders() { return columns.toArray(new String[0]) ; }
 
     public String[] getPrimaryKeys() {
         String[] primaryKeys = new String[entries.size()];
@@ -83,8 +94,6 @@ public class Table {
 
     int getNumberOfColumns() { return columns.size(); }
 
-    int getNumberOfEntries() { return entries.size(); }
-
     List<Entry> getEntries() { return entries; }
 
     // Takes in a comma separated string and adds it to the records ArrayList
@@ -94,7 +103,7 @@ public class Table {
 
         // Split the incoming record by commas
         String[] splitRecord = entry.split(",");
-        Entry newEntries = new Entry(primaryKey, splitRecord);;
+        Entry newEntries = new Entry(primaryKey, splitRecord);
         entries.add(newEntries);
     }
 
@@ -105,6 +114,7 @@ public class Table {
         for (int i = 0; i < entries.size(); i++) {
             if (entries.get(i).getKey() == key) {
                 entries.remove(i);
+                return;
             }
         }
     }
@@ -120,77 +130,58 @@ public class Table {
         }
     }
 
-    void updateRecord(int key, int itemLocation, String newRecord) {
-        for (int i = 0; i < entries.size(); i++) {
-            if (entries.get(i).getKey() == key) {
-                entries.get(i).updateElement(itemLocation, newRecord);
-            }
-        }
-    }
-
-
     // Prints out the table line by line by using StringBuilder to create the string
     String printFullTable() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Key" + "\t");
+        builder.append("id" + "\t");
         for (String c : columns) {
-            builder.append(c + "\t");
+            builder.append(c).append("\t");
         }
         builder.append("\n");
         // Loop through each entry
         for (int i = 0; i < entries.size(); i++) {
             // Add the keys
             builder.append(entries.get(i).getKey()).append("\t");
-            // Loop through each sub entry to get individual entries
-            for (int j = 0; j < entries.get(i).getElements().size(); j++) {
-                if (!(entries.get(i).getSingleElement(j).replace("'", "")).trim().equals("null")) {
-                    builder.append(entries.get(i).getSingleElement(j).replace("'", "").trim() + "\t");
-                }
-                else {
-                    builder.append("\t");
-                }
-            }
+            // Loop through each sub entry to get individual entries, -1 means that it will print off every entry
+            Database.printSingleElements(entries, builder, i);
             builder.append("\n");
         }
-        String finalText = builder.toString();
-        return finalText;
+        return builder.toString();
     }
 
     // Prints out the table with all keys and only specified columns line by line by using StringBuilder
     String printPartialTableAllKeys(List<Integer> columnIds) {
         StringBuilder builder = new StringBuilder();
         // Prints out the column titles
-        builder.append("Key" + "\t");
+        builder.append("id" + "\t");
         for (Integer column : columnIds) {
-            builder.append(columns.get(column) + "\t");
+            builder.append(columns.get(column)).append("\t");
         }
         builder.append("\n");
         // Loop through each entry
-        for (int i = 0; i < entries.size(); i++) {
+        for (Entry entry : entries) {
             // Add the keys
-            builder.append(entries.get(i).getKey() + "\t");
+            builder.append(entry.getKey()).append("\t");
             // Loop through each sub entry to get individual entries
             for (Integer column : columnIds) {
-                if (!(entries.get(i).getSingleElement(column).replace("'", "")).trim().equals("null")) {
-                    builder.append(entries.get(i).getSingleElement(column).replace("'", "").trim() + "\t");
-                }
-                else {
+                if (!(entry.getSingleElement(column).replace("'", "")).trim().equals("null")) {
+                    builder.append(entry.getSingleElement(column).replace("'", "").trim()).append("\t");
+                } else {
                     builder.append("\t");
                 }
             }
             builder.append("\n");
         }
-        String finalText = builder.toString();
-        return finalText;
+        return builder.toString();
     }
 
     // Prints out the table with all keys and only specified columns line by line by using StringBuilder
     String printPartialTableAllColumns(List<Integer> keys) {
         StringBuilder builder = new StringBuilder();
         // Prints out the column titles
-        builder.append("Key" + "\t");
+        builder.append("id" + "\t");
         for (String c : columns) {
-            builder.append(c + "\t");
+            builder.append(c).append("\t");
         }
         builder.append("\n");
 
@@ -199,53 +190,47 @@ public class Table {
             for (int i = 0; i < entries.size(); i++) {
                 if (entries.get(i).getKey() == key) {
                     // If a key matches print the key
-                    builder.append(entries.get(i).getKey() + "\t");
+                    builder.append(entries.get(i).getKey()).append("\t");
                     // Then iterate through the columns and print only the columns given in the list 'Columns'
                     // Loop through each sub entry to get individual entries
-                    for (int j = 0; j < entries.get(i).getElements().size(); j++) {
-                        if (!(entries.get(i).getSingleElement(j).replace("'", "")).trim().equals("null")) {
-                            builder.append(entries.get(i).getSingleElement(j).replace("'", "").trim() + "\t");
-                        } else {
-                            builder.append("\t");
-                        }
-                    }
+                    Database.printSingleElements(entries, builder, i);
                     builder.append("\n");
                 }
             }
         }
-        String finalText = builder.toString();
-        return finalText;
+        return builder.toString();
     }
 
     // Prints out partial table for searches
     String printPartialTable(List<Integer> keys, List<Integer> columnIds) {
         StringBuilder builder = new StringBuilder();
         // Prints out the column titles
-        builder.append("Key" + "\t");
+        builder.append("id" + "\t");
         for (Integer column : columnIds) {
-            builder.append(columns.get(column) + "\t");
+            builder.append(columns.get(column)).append("\t");
         }
         builder.append("\n");
 
         // Loop through keys and see if any match,
         for (Integer key : keys) {
-            for (int i = 0; i < entries.size(); i++) {
-                if (entries.get(i).getKey() == key) {
+            for (Entry entry : entries) {
+                if (entry.getKey() == key) {
                     // If a key matches print the key
-                    builder.append(entries.get(i).getKey() + "\t");
+                    builder.append(entry.getKey()).append("\t");
                     // Then iterate through the columns and print only the columns given in the list 'Columns'
                     for (Integer column : columnIds) {
-                        if (!(entries.get(i).getSingleElement(column).replace("'", "")).trim().equals("null")) {
-                            builder.append(entries.get(i).getSingleElement(column).replace("'", "").trim() + "\t");
-                        }
-                        else {
+                        if (!(entry.getSingleElement(column).replace("'", "")).trim().equals("null")) {
+                            builder.append(entry.getSingleElement(column).replace("'", "").trim()).append("\t");
+                        } else {
                             builder.append("\t");
                         }
                     }
                 }
-            } builder.append("\n");
+            }
+            builder.append("\n");
         }
-        String finalText = builder.toString();
-        return finalText;
+        return builder.toString();
     }
+
+
 }

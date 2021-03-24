@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -7,11 +6,12 @@ public class SelectCommand extends MainCommand {
 
     Table tableToPrint;
     Database currentDatabase;
-    List<Integer> bracketCount;
     List<Integer> columnIds = new ArrayList<>();
     List<Integer> rowIds = new ArrayList<>();
     String[] tokens;
     boolean returnAllColumns = false;
+    boolean returnOnlyKeys = false;
+
 
     public SelectCommand(HashMap<String, Database> databases, String[] incomingCommand, Database currentDatabase) {
         super.tokenizedText = incomingCommand;
@@ -24,10 +24,7 @@ public class SelectCommand extends MainCommand {
         // The table will always be the first item
         String tableName = tokens[0];
         tableName = tableName.split("from")[1].trim();
-        if ((tableToPrint = currentDatabase.getTable(tableName)) != null){
-            return true;
-        }
-        return false;
+        return (tableToPrint = currentDatabase.getTable(tableName)) != null;
     }
 
     private boolean getColumnsToPrint() {
@@ -39,14 +36,17 @@ public class SelectCommand extends MainCommand {
             returnAllColumns = true;
             return true;
         }
+        // If id is given, then only print the keys
+        if (columns.contains("id")) {
+            returnOnlyKeys = true;
+            return true;
+        }
         // Else loop through all columns, add the position to an array (ColumnsToReturn) if they exist
         // else return false if they don't
         else {
             String[] columnArray = columns.trim().split(" ");
             for (String column : columnArray) {
-                Integer id = null;
-                id = tableToPrint.getTableId(column);
-
+                Integer id = tableToPrint.getTableId(column);
                 if (id != null) {
                     columnIds.add(id);
                 }
@@ -82,14 +82,22 @@ public class SelectCommand extends MainCommand {
         }
 
         // Where statement
-        WhereCommand whereCommand = new WhereCommand(tokens, tableToPrint);
+        WhereCommand whereCommand = new WhereCommand(tokens, tableToPrint, tokenizedText);
 
         whereCommand.run();
         String stringToPrint;
+        if (whereCommand.checkAttributesExist()) {
+            return printError("Attribute does not exist");
+        }
         // * in SELECT statement
         if (returnAllColumns) {
             rowIds = whereCommand.getRowIds();
             stringToPrint = tableToPrint.printPartialTableAllColumns(rowIds);
+        }
+        else if (returnOnlyKeys) {
+            rowIds = whereCommand.getRowIds();
+
+            return printOk() + "\n" + tableToPrint.printPartialTable(rowIds, columnIds);
         }
         else {
             rowIds = whereCommand.getRowIds();

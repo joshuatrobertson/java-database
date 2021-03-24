@@ -2,16 +2,15 @@ import java.util.HashMap;
 
 public class AlterCommand extends MainCommand {
 
-    String alterationType;
-    String attributeName;
+    String alterationType, attributeName;
 
-    public AlterCommand(String[] incomingCommand, HashMap databases, String currentDatabase) {
+    public AlterCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;
         super.databases = databases;
         super.currentDatabase = currentDatabase;
         super.currentTable = tokenizedText[2];
         alterationType = tokenizedText[3];
-        attributeName = tokenizedText[4];
+        attributeName = tokenizedText[4].replace(";", "");
     }
 
     public String run() {

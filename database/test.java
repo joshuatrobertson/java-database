@@ -66,17 +66,53 @@ public class test {
 */
         JrSQLMain newsql = new JrSQLMain();
         System.out.println(newsql.run("   create database imdb ;    "));
-        System.out.println(newsql.run("   use imdb ;    "));
-        System.out.println(newsql.run("   creaTe TablE testtablenumber2(Name, age, d.o.b.);    "));
-        System.out.println(newsql.run("   insert into testtablenumber2 values ('josh', 25, 08.12.1992);    "));
-        System.out.println(newsql.run("   insert into testtablenumber2 values ('emily', 30, 01.02.1934);    "));
-       System.out.println(newsql.run("   insert into testtablenumber2 values ('peter', 19, 05.11.1994);    "));
+        System.out.println(newsql.run("   use markbook ;    "));
+/*
+       System.out.println(newsql.run("   insert into people values ('josh', 25, 1);    "));
+        System.out.println(newsql.run("   insert into people values ('emily', 30, 1);    "));
+       System.out.println(newsql.run("   insert into people values ('peter', 19, 2);    "));
+        System.out.println(newsql.run("   insert into people values ('paul', 39, 2);    "));
+        System.out.println(newsql.run("   insert into people values ('emma', 69, 3);    "));
+        System.out.println(newsql.run("   insert into people values ('sara', 34, 3);    "));
+        System.out.println(newsql.run("   insert into people values ('sdffds', 67, 1);    "));
+        System.out.println(newsql.run("   insert into people values ('sdsdf', 34, 1);    "));
+        System.out.println(newsql.run("   insert into people values ('eheer', 65, 2);    "));
+        System.out.println(newsql.run("   insert into people values ('erherhff', 45, 2);    "));
+        System.out.println(newsql.run("   insert into people values ('hergge', 69, 3);    "));
+        System.out.println(newsql.run("   insert into people values ('egasa', 42, 3);    "));
+        System.out.println(newsql.run("   insert into people values ('josh', 25, 1);    "));
+        System.out.println(newsql.run("   insert into people values ('emily', 30, 1);    "));
+        System.out.println(newsql.run("   insert into people values ('peter', 19, 2);    "));
+        System.out.println(newsql.run("   insert into people values ('paul', 39, 2);    "));
+        System.out.println(newsql.run("   insert into people values ('emma', 69, 3);    "));
+        System.out.println(newsql.run("   insert into people values ('sara', 34, 3);    "));
+        System.out.println(newsql.run("   insert into people values ('sdffds', 67, 1);    "));
+        System.out.println(newsql.run("   insert into people values ('sdsdf', 34, 1);    "));
+        System.out.println(newsql.run("   insert into people values ('eheer', 65, 2);    "));
+        System.out.println(newsql.run("   insert into people values ('erherhff', 45, 2);    "));
+        System.out.println(newsql.run("   insert into people values ('hergge', 69, 3);    "));
+        System.out.println(newsql.run("   insert into people values ('egasa', 42, 3);    "));
 
+*/
 
+        //System.out.println(newsql.run("   creaTe TablE profession(name, profession_id);    "));
+        /*
+        System.out.println(newsql.run("   insert into profession values ('actor', 1);    "));
+        System.out.println(newsql.run("   insert into profession values ('writer', 2);    "));
+        System.out.println(newsql.run("   insert into profession values ('engineer', 3);    "));
 
-       // System.out.println(newsql.run("   select * from testtablenumber2 where name == 'josh';    "));
-       System.out.println(newsql.run("   update testtablenumber2 SET age =99 where (age != 25) ;    "));
-        //System.out.println(newsql.run("   delete from testtablenumber2 where age>20  ;    "));
+         */
+
+       //System.out.println(newsql.run("   join  people  and profession on profession_id and id  ;  "));
+       // System.out.println(newsql.run("   join  people  and profession on id and profession_id;    "));
+
+        // System.out.println(newsql.run("   select * from profession ;    "));
+     //   System.out.println(newsql.run("   select * from people ;    "));
+
+        // System.out.println(newsql.run("   update randomtable SET age =99, sex = paul, d.o.b. = 01.01.01 where (age > 25) ;    "));
+        System.out.println(newsql.run("  select pass from marks where ((name=='steve') or (mark==75)) ;    "));
+
+     //   System.out.println(newsql.run("   delete from marks where (name=='steve') and (mark == 75) ;    "));
 
 
 
@@ -96,11 +132,11 @@ public class test {
 //        System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards > 5) AND (nationality == 'British');"));
 
 
-        //System.out.println(newsql.run("         SELECT name FROM testtable (where name like r);"));
+      //  System.out.println(newsql.run("         SELECT name FROM people (where name like r);"));
         //System.out.println(newsql.run("         SELECT name, age FROM testtable where name != 'bob';"));
-        //System.out.println(newsql.run("SELECT * FROM testtable WHERE name == 'Hugh Grant';"));
-        //System.out.println(newsql.run("SELECT name, age FROM testtable WHERE (awards>5) AND ((nationality<='British') OR (nationality LIKE 'Australian'));"));
-       // System.out.println(newsql.run("SELECT * FROM testtable WHERE (awards>=5) AND (nationality=='British');"));
+        //System.out.println(newsql.run("SELECT id FROM people WHERE name == 'peter';"));
+     //   System.out.println(newsql.run("SELECT * FROM people WHERE (profession_id==2) AND ((age>68) OR (name LIKE 'jo'));"));
+       // System.out.println(newsql.run("SELECT * FROM people WHERE (profession_id==2) or (age>20);"));
 
 
         /*

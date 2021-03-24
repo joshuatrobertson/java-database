@@ -5,7 +5,6 @@ public class JrSQLMain {
     private String currentDatabase = null;
     private final HashMap<String, Database> databases = new HashMap<>();
     private String[] tokenizedText;
-    FileIO file = new FileIO();
 
     public JrSQLMain() {
 
@@ -22,11 +21,6 @@ public class JrSQLMain {
     private String[] tokenizeText(String originalText) {
         String lowerCase = originalText.toLowerCase().trim();
         return lowerCase.split("\\s+");
-    }
-
-
-    public void addDatabase(String databaseName, Database database) {
-        databases.put(databaseName, database);
     }
 
     public String returnRelevantCommand(Command command) {
@@ -61,33 +55,14 @@ public class JrSQLMain {
                 DeleteCommand deleteCommand = new DeleteCommand(tokenizedText, databases, currentDatabase);
                 return deleteCommand.run();
             case JOIN:
-                return joinCommand();
+                JoinCommand joinCommand = new JoinCommand(tokenizedText, databases, currentDatabase);
+                return joinCommand.run();
             case MISSING_SEMI_COLON:
                 return "[ERROR]: Missing semi-colon";
             case NO_COMMAND:
                 return "[ERROR]";
         }
         return "No command found!";
-    }
-
-    private String alterCommand() {
-        return "[OK]";
-    }
-
-    private String insertCommand() {
-        return "[OK]";
-    }
-
-    private String updateCommand() {
-        return "[OK]";
-    }
-
-    private String deleteCommand() {
-        return "[OK]";
-    }
-
-    private String joinCommand() {
-        return "[OK]";
     }
 
     public void setCurrentDatabase(String database) { currentDatabase = database; }

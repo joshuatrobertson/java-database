@@ -3,21 +3,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WhereCommand extends MainCommand {
-    List<String> operator = new ArrayList<String>();
-    List<String> logicalOperators = new ArrayList<String>();
-    List<String> item = new ArrayList<String>();
-    List<String> searchTerm = new ArrayList<String>();
+    List<String> operator = new ArrayList<>();
+    List<String> logicalOperators = new ArrayList<>();
+    List<String> item = new ArrayList<>();
+    List<String> searchTerm = new ArrayList<>();
     List<Integer> bracketOrder = new ArrayList<>();
     String[] incomingCommand;
     Table tableToPrint;
+    String[] tokenText;
 
-    public WhereCommand(String[] incomingCommand, Table tableToPrint) {
+    public WhereCommand(String[] incomingCommand, Table tableToPrint, String[] tokenizedText) {
         this.incomingCommand = incomingCommand;
         this.tableToPrint = tableToPrint;
+        this.tokenText = tokenizedText;
     }
 
     public void run() {
-        bracketOrder = findBracketOrder(Arrays.toString(tokenizedText));
+        bracketOrder = findBracketOrder(Arrays.toString(tokenText));
         splitText();
         findOperators();
     }
@@ -42,6 +44,9 @@ public class WhereCommand extends MainCommand {
             }
         }
 
+
+    // Uses a regex to find and split with operators. Due to this method any operators within Strings
+    // will cause a crash
     private void findOperators() {
         String[] split = Arrays.toString(incomingCommand).split(",");
         split[0] = "";
@@ -56,31 +61,155 @@ public class WhereCommand extends MainCommand {
     public boolean checkAttributesExist() {
         for (String i : item) {
             if(!tableToPrint.checkAttributeExists(i)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
 
     public List<Integer> getRowIds() {
         Search searchFunction = new Search(tableToPrint);
-        List<Integer> columnIds = new ArrayList<>();
 
         // Only one condition
         if (item.size() == 1) {
-            Integer columnToSearch = tableToPrint.getColumnId(item.get(0));
-            // Is it an integer?
-            if (searchTerm.get(0).matches("-?(0|[1-9]\\d*)")) {
-                columnIds = searchFunction.searchWithOperator(operator.get(0), searchTerm.get(0), columnToSearch);
+            return getRowIdSingle(searchFunction);
+        }
+        return getRowIdMultiple(searchFunction);
+    }
+
+    // method used to find the row ids with boolean condition/s
+    private List<Integer> getRowIdMultiple(Search searchFunction) {
+        List<List<Integer>> multipleIds = new ArrayList<>();
+        for (int i = 0; i < item.size(); i++) {
+            Integer columnToSearch = tableToPrint.getColumnId(item.get(i));
+            // If it is an integer/ float
+            if (searchTerm.get(i).matches("-?(0|[1-9]\\d*)")) {
+                multipleIds.add(searchFunction.searchWithOperator(operator.get(i), searchTerm.get(i), columnToSearch));
             }
-            // String search
+            // If not then search as a String
             else {
-                columnIds = searchFunction.searchString(operator.get(0), searchTerm.get(0), columnToSearch);
+                multipleIds.add(searchFunction.searchString(operator.get(i), searchTerm.get(i), columnToSearch));
             }
         }
-        return columnIds;
+        return getRowIdsWithBoolean(multipleIds);
     }
+
+    // method to find the ids using a boolean condition.
+    // How it works ::::::
+    // First we get an array list of lists containing keys. We get the bracket order count from the below function,
+    // so that if enclosed within 2 brackets it will have a count of 2. We start off by and'ing/or'ing the highest
+    // brackets first, and then reducing the bracket count, and repeating until we have one item left, which is our
+    // final key array. To account for multiple items with the same bracket count, we first get the highest count
+    // and use boolean logic on the first two conditions of such we encounter.
+    private List<Integer> getRowIdsWithBoolean(List<List<Integer>> multipleIds) {
+        List<Integer> rowIdsPairToCheck = new ArrayList<>();
+        List<Integer> secondRowIdsToCheck,firstRowIdsToCheck, rowIds;
+
+        int highestBracketCount;
+
+        // Loop until we reach the final bracket count
+        while (multipleIds.size() > 1) {
+            // get the highest bracket count
+            highestBracketCount = findHighestBracketCount(this.bracketOrder);
+            for (int i = 0; i < bracketOrder.size(); i++) {
+                // if the integer is the same as the highest add until we reach a size of 2
+                // to compare them using boolean logic
+                if (bracketOrder.get(i) == highestBracketCount && rowIdsPairToCheck.size() < 2) {
+                    rowIdsPairToCheck.add(i);
+                }
+            }
+            int firstRow = rowIdsPairToCheck.get(0);
+            int secondRow = rowIdsPairToCheck.get(1);
+            firstRowIdsToCheck = multipleIds.get(firstRow);
+            secondRowIdsToCheck = multipleIds.get(secondRow);
+            multipleIds.remove(firstRow);
+            // Index will be -1 due to the first item being removed
+            multipleIds.remove(secondRow - 1);
+            // Reduce the bracket count by one to remove one set of brackets
+            if (bracketOrder.size() > 2) {
+                bracketOrder.set(firstRow, bracketOrder.get(firstRow - 1));
+                bracketOrder.remove(secondRow);
+            }
+            else {
+                bracketOrder.remove(0);
+            }
+            rowIds = compareWithBoolean(firstRowIdsToCheck, secondRowIdsToCheck,  logicalOperators.get(rowIdsPairToCheck.get(0)));
+            multipleIds.add(rowIds);
+            rowIdsPairToCheck.clear();
+        }
+        // Return the only item left after boolean operators
+        return multipleIds.get(0);
+    }
+
+    // Boolean AND and OR operations
+    private List<Integer> compareWithBoolean(List<Integer> firstIds, List<Integer> secondIds, String booleanCommand) {
+        List<Integer> results = new ArrayList<>();
+        // AND boolean command
+        if (booleanCommand.equals("and")) {
+           results = booleanAND(firstIds, secondIds);
+        }
+        else if (booleanCommand.equals("or")) {
+            results = booleanOR(firstIds, secondIds);
+        }
+        return results;
+    }
+
+    // OR method
+    private List<Integer> booleanOR(List<Integer> firstIds, List<Integer> secondIds) {
+        List<Integer> orResults = new ArrayList<>(firstIds);
+        for (Integer secondId : secondIds) {
+            if (!firstIds.contains(secondId)) {
+                orResults.add(secondId);
+            }
+        }
+        Collections.sort(orResults);
+        return orResults;
+    }
+
+    // AND method
+    private List<Integer> booleanAND(List<Integer> firstIds, List<Integer> secondIds) {
+    List<Integer> andResults = new ArrayList<>();
+        // Loop through the first list
+        for (Integer firstId : firstIds) {
+            // Loop through the second list until the number is = firstId (then add to the results) or > then continue
+            for (Integer secondId : secondIds) {
+                if (secondId > firstId) {
+                    break;
+                }
+                if (secondId.equals(firstId)) {
+                    andResults.add(firstId);
+                    break;
+                }
+            }
+        }
+            return andResults;
+    }
+
+    private int findHighestBracketCount(List<Integer> bracketOrder) {
+        int highest = 0;
+        for (Integer integer : bracketOrder) {
+            if (integer > highest) {
+                highest = integer;
+            }
+        }
+        return highest;
+    }
+
+    // Function used to find the row ids without boolean conditions
+    private List<Integer> getRowIdSingle(Search searchFunction) {
+        Integer columnToSearch = tableToPrint.getColumnId(item.get(0));
+        // Is it an integer?
+        if (searchTerm.get(0).matches("-?(0|[1-9]\\d*)")) {
+            return searchFunction.searchWithOperator(operator.get(0), searchTerm.get(0), columnToSearch);
+        }
+        // String search
+        else {
+            return searchFunction.searchString(operator.get(0), searchTerm.get(0), columnToSearch);
+        }
+    }
+
+
 
     // Loops through the string to count number of brackets in order to access
     // the order of execution. For example, two items with a number of 2 will get executed together
@@ -88,7 +217,6 @@ public class WhereCommand extends MainCommand {
     private List<Integer> findBracketOrder (String userQuery){
         int bracketCount = 0;
         List<Integer> executionOrder = new ArrayList<>();
-
         for (int i = 0; i < userQuery.length(); i++) {
             char c = userQuery.charAt(i);
             if (c == '(') {
@@ -106,6 +234,4 @@ public class WhereCommand extends MainCommand {
         }
         return executionOrder;
     }
-
-    public List<String> getOperators() { return operator; }
 }

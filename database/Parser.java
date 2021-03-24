@@ -65,9 +65,7 @@ public class Parser {
         }
 
         // Join command
-        if (userCommand[0].equals("join") && userCommand[2].equals("and") &&
-                userCommand[4].equals("on") && userCommand[6].equals("and") &&
-                userCommand.length == 8) {
+        if (userCommand[0].equals("join")) {
             return Command.JOIN;
         }
 

@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Entry {
 
-    private int primaryKey;
-    private List<String> elements = new ArrayList<String>();
+    private final int primaryKey;
+    private final List<String> elements = new ArrayList<>();
 
     public Entry(int key, String [] records) {
         primaryKey = key;
@@ -17,6 +17,8 @@ public class Entry {
     public void addNewNullElement() { elements.add("null"); }
 
     public int getKey() { return primaryKey; }
+
+    public String getKeyAsString() { return Integer.toString(primaryKey); }
 
     public List<String> getElements() { return elements; }
 

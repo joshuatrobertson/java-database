@@ -5,7 +5,7 @@ public class CreateTableCommand extends MainCommand {
     String tableName;
     String[] columnList;
 
-    public CreateTableCommand(String[] incomingCommand, HashMap databases, String currentDatabase) {
+    public CreateTableCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;
         super.databases = databases;
         super.currentDatabase = currentDatabase;
@@ -33,20 +33,17 @@ public class CreateTableCommand extends MainCommand {
 
 
     private boolean checkSelectedDatabase() {
-        return !currentDatabase.isEmpty();
+        return (currentDatabase != null) && (!currentDatabase.isEmpty());
     }
 
     String[] getColumns() {
         StringBuilder builder = new StringBuilder();
         for (String value : tokenizedText) {
-            builder.append(value + " ");
+            builder.append(value).append(" ");
         }
         String columns = builder.toString();
         columns = columns.substring(columns.indexOf("("), columns.indexOf(")")).replace("(", "");
-
-        String[] splitColumns = columns.split(",");
-
-        return splitColumns;
+        return columns.split(",");
     }
 
     private void createTable() {

@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 abstract class MainCommand {
 
@@ -7,6 +9,8 @@ abstract class MainCommand {
     FileIO file = new FileIO();
     String[] tokenizedText;
     String currentDatabase, currentTable;
+    List<Integer> keysToReturn = new ArrayList<>();
+
 
 
     public MainCommand () {
@@ -17,7 +21,13 @@ abstract class MainCommand {
 
     public String printError(String message) { return "[ERROR]: " + message; }
 
-    public boolean checkTableExists() { return databases.get(currentDatabase).checkTableExists(currentTable); }
+    public boolean checkTableExists() {
+        if (!databases.isEmpty()) {
+            if (databases.get(currentDatabase) != null)
+            return databases.get(currentDatabase).checkTableExists(currentTable);
+        }
+        return false;
+    }
 
     public String[] createTokens (String[] textToSplit) {
         // Splits the text up by brackets
@@ -26,8 +36,7 @@ abstract class MainCommand {
         startingString = startingString.replace(",", "");
         startingString = startingString.replace("[", "");
         startingString = startingString.replace(";]", "");
-        String[] finalArray = startingString.split("[\\(||\\)|]|where");
-        return finalArray;
+        return startingString.split("[(|)]|where");
     }
 
     public void writeTableToMemory() {

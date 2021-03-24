@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,11 +10,9 @@ public class UpdateCommand extends MainCommand {
     String[] whereValues;
     List<Integer> updateColumns;
     List<String> updateItems;
-    List<Integer> keysToReturn;
 
 
-
-    public UpdateCommand(String[] incomingCommand, HashMap databases, String currentDatabase) {
+    public UpdateCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;
         this.incomingCommand = incomingCommand;
         super.databases = databases;
@@ -38,41 +35,27 @@ public class UpdateCommand extends MainCommand {
 
     // Assign the table to the Table tableToPrint and return true, return false if it does not exist
     private boolean getTableToPrint() {
-        // The table will always be the first item
-        String tableName = tokens[0];
-        tableName = tableName.split("update")[1].trim();
-        if ((tableToUpdate = databases.get(currentDatabase).getTable(currentTable)) != null){
-            return true;
-        }
-        return false;
+        return (tableToUpdate = databases.get(currentDatabase).getTable(currentTable)) != null;
     }
 
     private String getKeysAndRun() {
-        String tokensAfterWhere = Arrays.toString(tokens);
-        tokensAfterWhere = tokens[1];
-        String[] tokensArray;
-        tokensAfterWhere = tokensAfterWhere.replace("]", "").trim();
-        tokensArray = tokensAfterWhere.split("(and)|(or)|(like)");
-        WhereCommand whereCommand = new WhereCommand(tokens, tableToUpdate);
-        if (!whereCommand.checkAttributesExist()) {
+        WhereCommand whereCommand = new WhereCommand(tokens, tableToUpdate, tokenizedText);
+        if (whereCommand.checkAttributesExist()) {
             return printError("Attributes do not exist");
         }
         whereCommand.run();
         keysToReturn = new ArrayList<>();
         keysToReturn = whereCommand.getRowIds();
-        getupdateItems();
-
-
+        getUpdateItems();
         return updateTable();
     }
 
-    private void getupdateItems() {
+    private void getUpdateItems() {
         updateItems = new ArrayList<>();
         updateColumns = new ArrayList<>();
-        String tokenSplit = Arrays.toString(tokenizedText);
         String[] newTokens = tokens[0].split("set");
         String tokenString = newTokens[1];
-        String tokenStringSplit[] = tokenString.split("=| ");
+        String[] tokenStringSplit = tokenString.split("[= ]");
         int count = 0;
         for (String s : tokenStringSplit) {
             // The items will be in the order item to update, update value and therefore those with an even number position
@@ -94,19 +77,19 @@ public class UpdateCommand extends MainCommand {
     private String updateTable() {
         // Loop through each entry that needs to be updated
         for (Integer key : keysToReturn) {
-                // Update each column
-                for (int i = 0; i < tableToUpdate.getEntries().size(); i++) {
-                    if (tableToUpdate.getEntries().get(i).getKey() == key) {
-                        // Update single value in table
-                        if (updateColumns.size() == 1) {
-                            tableToUpdate.getEntries().get(i).updateElement(updateColumns.get(0), updateItems.get(0));
+            // Update each column
+            for (int i = 0; i < tableToUpdate.getEntries().size(); i++) {
+                if (tableToUpdate.getEntries().get(i).getKey() == key) {
+                    // Update single value in table
+                    if (updateColumns.size() == 1) {
+                        tableToUpdate.getEntries().get(i).updateElement(updateColumns.get(0), updateItems.get(0));
+                    }
+                    else {
+                        // update > 1 values, therefore cycle through ArrayList updateColumns && updateItems
+                        for (Integer column : updateColumns) {
+                            tableToUpdate.getEntries().get(i).updateElement(updateColumns.get(column), updateItems.get(column));
                         }
-                        else {
-                            // update > 1 values, therefore cycle through ArrayList updateColumns && updateItems
-                            for (Integer column : updateColumns) {
-                                tableToUpdate.getEntries().get(i).updateElement(updateColumns.get(column), updateItems.get(column));
-                            }
-                        }
+                    }
                 }
             }
         }

@@ -13,26 +13,23 @@ element[bracketArray[i]] = etc
 
 
 
-Bugs -
-No ' ' messes up search
 
-
-Alter add
-Gets table and adds in attribute (attribute name) to table
-
-Alter remove
-Delete the column in table->columns
-Delete the element in entries[i]
 
 INSERT
 Giving wrong number of attributes return error
 
 UPDATE
-make updateTable() more efficient (not loop throguh each keys - instead loop until reach one)
-
-WHERE
-Add support for boolean operators
+make updateTable() more efficient (not loop through each keys - instead loop until reach one)
 
 
 
+
+RANDOM
+Make variable names better
+incorrect column names causes crash
+Cleanm up names i.e. columns vs attribute
+Make select able to print just the keys
+Make print not print null
+Deal with floats and string literals
+Have items keep capitals
 
