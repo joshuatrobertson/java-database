@@ -87,7 +87,7 @@ public class FileIO {
         try {
             FileWriter writer = new FileWriter("files" + File.separator + databaseName + File.separator + tableName + ".jsql");
             writer.write("TableName:\n" + tableName);
-            writeItem(writer, tableToPrint.getColumnHeaders(), "|||", "\nColumns");
+            writeItem(writer, tableToPrint.getAttributes(), "|||", "\nColumns");
             writeItem(writer, tableToPrint.getPrimaryKeys(), "||", "\nPrimaryKeys");
             writeRecords(writer, tableToPrint.getRecords(), tableToPrint.getNumberOfColumns());
             writer.close();
@@ -187,7 +187,7 @@ public class FileIO {
 
         // Add the columns to the table
         String[] columns = getColumnHeaders();
-        for (String column : columns) { newTable.addNewColumn(column); }
+        for (String column : columns) { newTable.addNewAttribute(column); }
 
         // Add the records and primary keys
         List<String[]> recordList;

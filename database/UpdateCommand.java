@@ -53,7 +53,7 @@ public class UpdateCommand extends MainCommand {
     private void getUpdateItems() {
         updateItems = new ArrayList<>();
         updateColumns = new ArrayList<>();
-        String[] newTokens = tokens[0].split("set");
+        String[] newTokens = tokens[0].toLowerCase().split("set");
         String tokenString = newTokens[1];
         String[] tokenStringSplit = tokenString.split("[= ]");
         int count = 0;
@@ -63,7 +63,7 @@ public class UpdateCommand extends MainCommand {
             if (!s.isBlank()) {
                 if (count % 2 == 0) {
                     // If even number find the column position
-                    int columnNumber = tableToUpdate.getColumnId(s);
+                    int columnNumber = tableToUpdate.getAttributePosition(s);
                     updateColumns.add(columnNumber);
                 }
                 else {

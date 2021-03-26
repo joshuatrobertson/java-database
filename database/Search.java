@@ -12,7 +12,7 @@ public class Search {
     }
 
     List<Integer> searchString(String operator, String searchTerm, Integer columnToSearch) {
-        return switch (operator) {
+        return switch (operator.toLowerCase()) {
             case "like" -> searchLikeEqualsCommand(searchTerm, columnToSearch, "like");
             case "==" -> searchLikeEqualsCommand(searchTerm, columnToSearch, "==");
             case "!=" -> searchLikeEqualsCommand(searchTerm, columnToSearch, "!=");
@@ -30,24 +30,24 @@ public class Search {
             //Search the column of the specific record
             List<String> items = oldEntry.getElements();
             // Search for instances of the itemToSearch String
-            switch (likeOrEquals) {
+            switch (likeOrEquals.toLowerCase()) {
                 case "like":
                     // get rid of string ( ' )
                     itemToSearch = itemToSearch.replace("'", "");
                     // If string '.contains() the item return it
-                    if (items.get(columnToSearch).toLowerCase().contains(itemToSearch.replace("'", ""))) {
+                    if (items.get(columnToSearch).contains(itemToSearch.replace("'", ""))) {
                         searchResultsCopy.add(oldEntry.getKey());
                     }
                     break;
                 // Add if the term matches
                 case "==":
-                    if (items.get(columnToSearch).replace("'", "").toLowerCase().trim().equals(itemToSearch.replace("'", ""))) {
+                    if (items.get(columnToSearch).replace("'", "").trim().equalsIgnoreCase(itemToSearch.replace("'", ""))) {
                         searchResultsCopy.add(oldEntry.getKey());
                     }
                     break;
                 // Add if the term doesn't matches
                 case "!=":
-                    if (!items.get(columnToSearch).replace("'", "").toLowerCase().trim().equals(itemToSearch.replace("'", ""))) {
+                    if (!items.get(columnToSearch).replace("'", "").trim().equalsIgnoreCase(itemToSearch.replace("'", ""))) {
                         searchResultsCopy.add(oldEntry.getKey());
                     }
                     break;

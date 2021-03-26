@@ -28,8 +28,6 @@ RANDOM
 Make variable names better
 incorrect column names causes crash
 Cleanm up names i.e. columns vs attribute
-Make select able to print just the keys
-Make print not print null
-Deal with floats and string literals
-Have items keep capitals
+
+When reading in store the type in the table columns
 

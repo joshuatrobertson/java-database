@@ -18,7 +18,7 @@ public class Parser {
         }
 
         // Use command
-        if (userCommand[0].equals("use") && (userCommand.length <= 3)) {
+        if (userCommand[0].equalsIgnoreCase("use") && (userCommand.length <= 3)) {
             return Command.USE;
         }
 
@@ -33,8 +33,8 @@ public class Parser {
         }
 
         // Drop command
-        if (userCommand[0].equals("drop") && userCommand[1].equals("table") | userCommand[1].equals("database") &&
-                userCommand.length <= 4) {
+        if (userCommand[0].equalsIgnoreCase("drop") && userCommand[1].equalsIgnoreCase("table") |
+                userCommand[1].equalsIgnoreCase("database") && userCommand.length <= 4) {
             return Command.DROP;
         }
 
@@ -44,18 +44,17 @@ public class Parser {
         }
 
         // Insert command
-        if (testFirstTwoCommands("insert", "into") &&
-                userCommand.length >= 5) {
+        if (testFirstTwoCommands("insert", "into")) {
             return Command.INSERT;
         }
 
         // Select command
-        if (userCommand[0].equals("select")) {
+        if (userCommand[0].equalsIgnoreCase("select")) {
             return Command.SELECT;
         }
 
         // Update command
-        if (userCommand[0].equals("update")) {
+        if (userCommand[0].equalsIgnoreCase("update")) {
             return Command.UPDATE;
         }
 
@@ -65,7 +64,7 @@ public class Parser {
         }
 
         // Join command
-        if (userCommand[0].equals("join")) {
+        if (userCommand[0].equalsIgnoreCase("join")) {
             return Command.JOIN;
         }
 
@@ -75,18 +74,15 @@ public class Parser {
 
 
     private boolean testFirstTwoCommands(String firstCommand, String secondCommand) {
-        if (userCommand[0].equals(firstCommand) && userCommand[1].equals(secondCommand)) {
-            return true;
-        }
-        return false;
+        return userCommand[0].trim().equalsIgnoreCase(firstCommand) && userCommand[1].trim().equalsIgnoreCase(secondCommand);
     }
 
     private Command errorTest() {
         // Check for a missing semi-colon
-        String stringQuery = Arrays.toString(userCommand);
+         String stringQuery = Arrays.toString(userCommand);
 
         // As it is from a String array it will be concatenated with a ']'
-        if (!stringQuery.endsWith(";]")) {
+        if (!stringQuery.endsWith(";]") && stringQuery.length() > 3) {
             return Command.MISSING_SEMI_COLON;
         }
         return Command.NO_ERRORS;

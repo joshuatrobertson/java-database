@@ -1,3 +1,5 @@
+// WHERE command finds the keys to return through using boolean AND and OR operators
+
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +13,8 @@ public class WhereCommand extends MainCommand {
     String[] incomingCommand;
     Table tableToPrint;
     String[] tokenText;
+    private Boolean errorFound = false;
+    private String errorMessage;
 
     public WhereCommand(String[] incomingCommand, Table tableToPrint, String[] tokenizedText) {
         this.incomingCommand = incomingCommand;
@@ -22,9 +26,68 @@ public class WhereCommand extends MainCommand {
         bracketOrder = findBracketOrder(Arrays.toString(tokenText));
         splitText();
         findOperators();
+        checkErrors();
     }
-    
-    // Function to fetch the search term and item to search
+
+    private void checkErrors() {
+        if (checkQuotes()) { return; }
+        if (checkStringExpected()) { return; }
+        if (checkConvertStrings()) { return; }
+    }
+
+
+    private boolean checkQuotes() {
+        for (String s : searchTerm) {
+            if (!isStringNumerical(s) && !isStringBoolean(s)) {
+                if ((!s.startsWith("'")) || !s.endsWith("'")) {
+                    errorFound = true;
+                    errorMessage = "Attribute is not enclosed with ''";
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkStringExpected() {
+        for (int i = 0; i < operator.size(); i++) {
+            if (operator.get(i).equalsIgnoreCase("like")) {
+                if(tableToPrint.checkAttributeType(item.get(i)) == ValueType.FLOAT_LITERAL) {
+                    errorFound = true;
+                    errorMessage = "String expected";
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isStringBoolean(String itemToSearch) {
+        return (itemToSearch.equals("true") || itemToSearch.equals("false"));
+    }
+
+    private boolean checkConvertStrings() {
+        for (int i = 0; i < item.size(); i++) {
+            if (isStringNumerical(searchTerm.get(i))) {
+               if(tableToPrint.checkAttributeType(item.get(i)) != ValueType.FLOAT_LITERAL) {
+                   errorFound = true;
+                   errorMessage = "Attribute cannot be converted to number";
+                   return true;
+               }
+            }
+        }
+        return false;
+    }
+
+    public boolean checkErrorsFound() { return errorFound; }
+
+    private boolean isStringNumerical(String itemToCheck) {
+        return itemToCheck.matches("^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$");
+    }
+
+    public String getErrorMessage() { return "[ERROR]: " + errorMessage; }
+
+    // Function to fetch the search terms, items to search and operators
     private void splitText() {
         // Loop through the array (the first will be the select command)
         for (int i = 1; i < incomingCommand.length; i++) {
@@ -37,8 +100,8 @@ public class WhereCommand extends MainCommand {
                 // First split according to operators and like so for the above command the result will be
                 // age, 5. Then add to the respective arrays
                 else {
-                    item.add(incomingCommand[i].split("(!=)|(>=)|(<=)|(==)|[>=<]|(like)", 3)[0].trim());
-                    searchTerm.add(incomingCommand[i].split("(!=)|(>=)|(<=)|(==)|[>=<]|(like)", 3)[1].trim());
+                    item.add(incomingCommand[i].split("(!=)|(>=)|(<=)|(==)|[><]|((?i)like)", 3)[0].trim());
+                    searchTerm.add(incomingCommand[i].split("(!=)|(>=)|(<=)|(==)|[><]|((?i)like)", 3)[1].trim());
                     }
                 }
             }
@@ -51,7 +114,7 @@ public class WhereCommand extends MainCommand {
         String[] split = Arrays.toString(incomingCommand).split(",");
         split[0] = "";
         String joinedCommand = Arrays.toString(split);
-        Matcher matcher = Pattern.compile("(!=)|(>=)|(<=)|(==)|[>=<]|(like)")
+        Matcher matcher = Pattern.compile("(!=)|(>=)|(<=)|(==)|[><]|((?i)like)")
                 .matcher(joinedCommand);
         while (matcher.find()) {
             operator.add(matcher.group());
@@ -79,29 +142,31 @@ public class WhereCommand extends MainCommand {
     }
 
     // method used to find the row ids with boolean condition/s
-    private List<Integer> getRowIdMultiple(Search searchFunction) {
+    private List<Integer> getRowIdMultiple(Search search) {
         List<List<Integer>> multipleIds = new ArrayList<>();
         for (int i = 0; i < item.size(); i++) {
-            Integer columnToSearch = tableToPrint.getColumnId(item.get(i));
+            Integer columnToSearch = tableToPrint.getAttributePosition(item.get(i));
             // If it is an integer/ float
-            if (searchTerm.get(i).matches("-?(0|[1-9]\\d*)")) {
-                multipleIds.add(searchFunction.searchWithOperator(operator.get(i), searchTerm.get(i), columnToSearch));
+            if (isStringNumerical(searchTerm.get(i))) {
+                multipleIds.add(search.searchWithOperator(operator.get(i), searchTerm.get(i), columnToSearch));
             }
             // If not then search as a String
             else {
-                multipleIds.add(searchFunction.searchString(operator.get(i), searchTerm.get(i), columnToSearch));
+                multipleIds.add(search.searchString(operator.get(i), searchTerm.get(i), columnToSearch));
             }
         }
         return getRowIdsWithBoolean(multipleIds);
     }
 
     // method to find the ids using a boolean condition.
-    // How it works ::::::
+    // How it works :=
     // First we get an array list of lists containing keys. We get the bracket order count from the below function,
-    // so that if enclosed within 2 brackets it will have a count of 2. We start off by and'ing/or'ing the highest
-    // brackets first, and then reducing the bracket count, and repeating until we have one item left, which is our
-    // final key array. To account for multiple items with the same bracket count, we first get the highest count
-    // and use boolean logic on the first two conditions of such we encounter.
+    // so that if enclosed within 2 brackets it will have a count of 2 and if enclosed in single brackets 1 etc.
+    // This way, the order of execution can be carried out taking into account bracket order.
+    // We start off by and'ing/or'ing the highest brackets first, and then reducing the bracket count, repeating until we have
+    // one item left, which is our final key array. To account for multiple items with the same bracket count, we first get the highest count
+    // and use boolean logic on the first two conditions of such we encounter, that way we account for a bracket count with multiple
+    // similar conditions, for example bracket count (1, 1, 2, 2, 1, 1)
     private List<Integer> getRowIdsWithBoolean(List<List<Integer>> multipleIds) {
         List<Integer> rowIdsPairToCheck = new ArrayList<>();
         List<Integer> secondRowIdsToCheck,firstRowIdsToCheck, rowIds;
@@ -119,23 +184,29 @@ public class WhereCommand extends MainCommand {
                     rowIdsPairToCheck.add(i);
                 }
             }
+            // Get the position of the items to check in multipleIds (which contains all of the seperate searches)
             int firstRow = rowIdsPairToCheck.get(0);
             int secondRow = rowIdsPairToCheck.get(1);
+            // Now fetch the list of keys that need checking for each item
             firstRowIdsToCheck = multipleIds.get(firstRow);
             secondRowIdsToCheck = multipleIds.get(secondRow);
             multipleIds.remove(firstRow);
             // Index will be -1 due to the first item being removed
-            multipleIds.remove(secondRow - 1);
+
             // Reduce the bracket count by one to remove one set of brackets
             if (bracketOrder.size() > 2) {
-                bracketOrder.set(firstRow, bracketOrder.get(firstRow - 1));
+                bracketOrder.set(firstRow, bracketOrder.get(firstRow) - 1);
                 bracketOrder.remove(secondRow);
             }
             else {
                 bracketOrder.remove(0);
             }
-            rowIds = compareWithBoolean(firstRowIdsToCheck, secondRowIdsToCheck,  logicalOperators.get(rowIdsPairToCheck.get(0)));
-            multipleIds.add(rowIds);
+
+            // Cycle through the relevant boolean operators and remove once used
+            String currentBooleanOperator = logicalOperators.get(firstRow);
+            logicalOperators.remove(firstRow);
+            rowIds = compareWithBoolean(firstRowIdsToCheck, secondRowIdsToCheck,  currentBooleanOperator);
+            multipleIds.set(secondRow - 1, rowIds);
             rowIdsPairToCheck.clear();
         }
         // Return the only item left after boolean operators
@@ -146,10 +217,10 @@ public class WhereCommand extends MainCommand {
     private List<Integer> compareWithBoolean(List<Integer> firstIds, List<Integer> secondIds, String booleanCommand) {
         List<Integer> results = new ArrayList<>();
         // AND boolean command
-        if (booleanCommand.equals("and")) {
+        if (booleanCommand.equalsIgnoreCase("and")) {
            results = booleanAND(firstIds, secondIds);
         }
-        else if (booleanCommand.equals("or")) {
+        else if (booleanCommand.equalsIgnoreCase("or")) {
             results = booleanOR(firstIds, secondIds);
         }
         return results;
@@ -198,9 +269,9 @@ public class WhereCommand extends MainCommand {
 
     // Function used to find the row ids without boolean conditions
     private List<Integer> getRowIdSingle(Search searchFunction) {
-        Integer columnToSearch = tableToPrint.getColumnId(item.get(0));
+        Integer columnToSearch = tableToPrint.getAttributePosition(item.get(0));
         // Is it an integer?
-        if (searchTerm.get(0).matches("-?(0|[1-9]\\d*)")) {
+        if (isStringNumerical(searchTerm.get(0))) {
             return searchFunction.searchWithOperator(operator.get(0), searchTerm.get(0), columnToSearch);
         }
         // String search

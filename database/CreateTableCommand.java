@@ -4,30 +4,51 @@ public class CreateTableCommand extends MainCommand {
 
     String tableName;
     String[] columnList;
+    String errorMessage;
 
     public CreateTableCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;
         super.databases = databases;
         super.currentDatabase = currentDatabase;
-        super.currentTable = getTableName();
     }
 
     // Creates a new database and folder within /files/
     public String run() {
         if (!checkSelectedDatabase()) { return printError("No database selected") ; }
+        if (checkErrors()) { return printError(errorMessage); }
+        super.currentTable = getTableName();
         if (checkTableExists()) { return printError("Table already exists") ; }
         this.columnList = getColumns();
+        if (!checkAttributesAlphaNum()) { return printError("Attributes must be alphanumerical"); }
         tableName = getTableName();
         createTable();
         return printOk();
     }
 
+    private boolean checkErrors() {
+        String errors = Arrays.toString(tokenizedText);
+        if (!errors.contains("(") || !errors.contains(")")) {
+            errorMessage = "No enclosing brackets for CREATE TABLE statement";
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkAttributesAlphaNum() {
+        for (String s : columnList) {
+            if (s.trim().matches("^.*[^a-zA-Z0-9 ].*$")){
+                return false;
+            }
+        }
+        return true;
+    }
+
     private String getTableName() {
         String tableName = Arrays.toString(tokenizedText);
         // Remove everything after and including the opening brace
-        tableName = tableName.substring(tableName.indexOf("table"), tableName.indexOf("("));
+        tableName = tableName.substring(tableName.toLowerCase().indexOf("table"), tableName.toLowerCase().indexOf("("));
         // Remove "table and '|,"
-        tableName = tableName.replaceAll("[,']|\\btable\\b", "").trim().toLowerCase();
+        tableName = tableName.replaceAll("[,']|\\b(?i)table\\b", "").trim();
         return tableName;
     }
 
@@ -48,8 +69,8 @@ public class CreateTableCommand extends MainCommand {
 
     private void createTable() {
         Table newTable = new Table(tableName);
-        for (String s : columnList) {
-            newTable.addColumn(s);
+        for (String attribute : columnList) {
+            newTable.addColumn(attribute.trim());
         }
         databases.get(currentDatabase).addTable(newTable);
         file.createEmptyTable(tableName, currentDatabase, columnList);

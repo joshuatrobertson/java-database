@@ -1,4 +1,3 @@
-create database test;
 
 create table name
         id integer;

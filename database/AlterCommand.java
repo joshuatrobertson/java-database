@@ -8,10 +8,12 @@ public class AlterCommand extends MainCommand {
         super.tokenizedText = incomingCommand;
         super.databases = databases;
         super.currentDatabase = currentDatabase;
-        super.currentTable = tokenizedText[2];
-        alterationType = tokenizedText[3];
-        attributeName = tokenizedText[4].replace(";", "");
+        super.currentTable = tokenizedText[2].trim();
+        alterationType = tokenizedText[3].toLowerCase().trim();
+        attributeName = tokenizedText[4].replace(";", "").trim();
     }
+
+
 
     public String run() {
         if (!checkTableExists()) { return printError("Table does not exist"); }
@@ -34,7 +36,7 @@ public class AlterCommand extends MainCommand {
 
     private String alterTableAdd() {
         if (checkAttributeExists()) { return printError("Attribute already exists"); }
-        databases.get(currentDatabase).getTable(currentTable).addNewColumn(attributeName);
+        databases.get(currentDatabase).getTable(currentTable).addNewAttribute(attributeName);
         writeTableToMemory();
         return printOk();
     }

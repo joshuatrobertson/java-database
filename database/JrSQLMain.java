@@ -1,3 +1,4 @@
+import javax.xml.crypto.Data;
 import java.util.*;
 
 public class JrSQLMain {
@@ -7,7 +8,6 @@ public class JrSQLMain {
     private String[] tokenizedText;
 
     public JrSQLMain() {
-
     }
 
     public String run(String incomingCommand) {
@@ -19,12 +19,12 @@ public class JrSQLMain {
 
     // Splits the text up and removes any whitespace
     private String[] tokenizeText(String originalText) {
-        String lowerCase = originalText.toLowerCase().trim();
-        return lowerCase.split("\\s+");
+        return originalText.trim().split("\\s+");
     }
 
-    public String returnRelevantCommand(Command command) {
+    public HashMap<String, Database> getDatabases() { return databases; }
 
+    public String returnRelevantCommand(Command command) {
         switch (command) {
             case USE:
                 UseCommand useCommand = new UseCommand(tokenizedText, databases);
@@ -58,9 +58,9 @@ public class JrSQLMain {
                 JoinCommand joinCommand = new JoinCommand(tokenizedText, databases, currentDatabase);
                 return joinCommand.run();
             case MISSING_SEMI_COLON:
-                return "[ERROR]: Missing semi-colon";
+                return "[ERROR]: Semi colon missing at end of line";
             case NO_COMMAND:
-                return "[ERROR]";
+                return "[ERROR]: Invalid query";
         }
         return "No command found!";
     }

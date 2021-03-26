@@ -6,9 +6,11 @@ public class Database {
     // Each database stores a list of tables contained within it
     private final HashMap<String, Table> tableList = new HashMap<>();
     FileIO file = new FileIO();
+    private String databaseName;
 
     public Database(String databaseName) {
         file.createDatabaseFolder(databaseName);
+        this.databaseName = databaseName;
     }
 
     public void removeTable(String tableName) {
@@ -16,8 +18,8 @@ public class Database {
     }
 
     // Adds a table to the Table ArrayList
-    void addTable(Table table) {
-        tableList.put(table.getTableName().toLowerCase(), table);
+    public void addTable(Table table) {
+        tableList.put(table.getTableName(), table);
     }
 
 
@@ -40,21 +42,20 @@ public class Database {
         // Counter for the id column
         int id = 1;
 
-
         // Prints out the table with all keys and only specified columns line by line by using StringBuilder
         StringBuilder builder = new StringBuilder();
         // Prints out the column titles
         builder.append("id" + "\t");
-        for (String c : columns1) {
-            if (!c.equals(attribute1)) {
-                builder.append(firstTable.getTableName()).append(".").append(c).append("\t");
+        for (String attribute : columns1) {
+            if (!attribute.equals(attribute1)) {
+                builder.append(firstTable.getTableName()).append(".").append(attribute).append("\t");
 
             }
         }
-        for (String c : columns2) {
-            if (!c.equals(attribute2)) {
+        for (String attribute : columns2) {
+            if (!attribute.equals(attribute2)) {
                 // Appends the table + attribute name
-                builder.append(secondTable.getTableName()).append(".").append(c).append("\t");
+                builder.append(secondTable.getTableName()).append(".").append(attribute).append("\t");
             }
         }
         builder.append("\n");
@@ -87,6 +88,8 @@ public class Database {
         return builder.toString();
     }
 
+    public String getDatabaseName() { return databaseName; }
+
     static void printSingleElementsId(List<Entry> entries, StringBuilder builder, int location) {
         // Loop through each entry
         for (int x = 0; x < entries.get(location).getElements().size(); x++) {
@@ -102,5 +105,8 @@ public class Database {
             if (!(entries.get(location).getKeyAsString().replace("'", "")).trim().equals("null")) {
                     builder.append(entries.get(location).getSingleElement(x).replace("'", "").trim()).append("\t");
             }
+        builder.append("\t");
     }
+
+    public HashMap<String, Table> getTableList() { return tableList; }
 }

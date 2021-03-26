@@ -14,16 +14,16 @@ public class Table {
     }
 
     // Adds a column into the ArrayList
-    void addColumn(String columnName) {
-        columns.add(columnName);
+    void addColumn(String attribute) {
+        columns.add(attribute);
     }
 
     public List<String> getColumns() { return columns; }
 
-    public Integer getColumnId(String columnName) {
-        for (String column : columns) {
-            if (column.toLowerCase().trim().replace(";", "").equals(columnName)) {
-                return columns.indexOf(column);
+    public Integer getAttributePosition(String attributeName) {
+        for (String attribute : columns) {
+            if (attribute.trim().replace(";", "").equalsIgnoreCase(attributeName)) {
+                return columns.indexOf(attribute);
             }
         }
         return null;
@@ -34,7 +34,7 @@ public class Table {
         for (int i = 0; i < columns.size(); i++)
             // Loop through checking the column name at position[i] against the given columnName
             // and return the index if found
-            if (columns.get(i).toLowerCase().equals(columnName)){
+            if (columns.get(i).equalsIgnoreCase(columnName)){
                 return i;
             }
         // If not found return nul
@@ -44,7 +44,7 @@ public class Table {
     // Iterate through the entries and add each one contained within [columnName] to an integer array
     public String[] getForeignKeys(String columnName) {
         String[] items = new String[entries.size()];
-        int column = getColumnId(columnName);
+        int column = getAttributePosition(columnName);
         for (int i = 0; i < entries.size(); i++) {
             items[i] = entries.get(i).getSingleElement(column).trim();
         }
@@ -52,11 +52,11 @@ public class Table {
     }
 
 
-    // When a column is added after the table has been initialised, fill
+    // When an attribute is added after the table has been initialised, fill
     // the row with null values
-    void addNewColumn(String columnName) {
+    void addNewAttribute(String attributeName) {
         // Add a new column
-        columns.add(columnName);
+        columns.add(attributeName);
         // Fill the array with 'void' so that the list can be accessed
         // at that index
         for (Entry entry : entries) {
@@ -70,7 +70,24 @@ public class Table {
         this.primaryKey = primaryKey;
     }
 
-    public String[] getColumnHeaders() { return columns.toArray(new String[0]) ; }
+    public String[] getAttributes() { return columns.toArray(new String[0]) ; }
+
+    public ValueType checkAttributeType(String attributeName) {
+        int position = getAttributePosition(attributeName);
+        // Check the first item in the list
+        String itemToCheck = entries.get(0).getSingleElement(position).trim();
+
+        if (itemToCheck.contains("'")) {
+            return ValueType.STRING_LITERAL;
+        }
+        else if (itemToCheck.equals("true") || itemToCheck.equals("false")) {
+            return ValueType.BOOLEAN_LITERAL;
+        }
+        else if (itemToCheck.matches("^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$")) {
+            return ValueType.FLOAT_LITERAL;
+        }
+    return ValueType.ERROR;
+    }
 
     public String[] getPrimaryKeys() {
         String[] primaryKeys = new String[entries.size()];
@@ -97,7 +114,7 @@ public class Table {
     List<Entry> getEntries() { return entries; }
 
     // Takes in a comma separated string and adds it to the records ArrayList
-    void insertNewEntry(String entry) {
+    public void insertNewEntry(String entry) {
         // Increase the primary key by one with each record
         primaryKey++;
 
@@ -123,7 +140,7 @@ public class Table {
 
     // Deletes a row with the associated data
     void deleteAttribute(String attributeName) {
-        int column = getColumnId(attributeName);
+        int column = getAttributePosition(attributeName);
         columns.remove(column);
         for (Entry entry : entries) {
             entry.removeElement(column);

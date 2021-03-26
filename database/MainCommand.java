@@ -23,8 +23,8 @@ abstract class MainCommand {
 
     public boolean checkTableExists() {
         if (!databases.isEmpty()) {
-            if (databases.get(currentDatabase) != null)
-            return databases.get(currentDatabase).checkTableExists(currentTable);
+            if (databases.get(currentDatabase.trim()) != null)
+            return databases.get(currentDatabase.trim()).checkTableExists(currentTable.trim());
         }
         return false;
     }
@@ -36,12 +36,10 @@ abstract class MainCommand {
         startingString = startingString.replace(",", "");
         startingString = startingString.replace("[", "");
         startingString = startingString.replace(";]", "");
-        return startingString.split("[(|)]|where");
+        return startingString.split("[(|)]|(?i)where");
     }
 
     public void writeTableToMemory() {
         file.writeFromTableInMemory(currentTable, currentDatabase, databases.get(currentDatabase).getTable(currentTable));
     }
-
-
 }
