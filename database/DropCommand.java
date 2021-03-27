@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 public class DropCommand extends MainCommand {
 
-    String command;
+    private final String command;
 
     public DropCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;

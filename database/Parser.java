@@ -3,8 +3,7 @@ import java.util.Arrays;
 // Takes in a String and parses to conform with the SQL grammar
 public class Parser {
 
-    Command command;
-    String[] userCommand;
+    private String[] userCommand;
 
     public Parser(String[] userCommand) {
         this.userCommand = userCommand;

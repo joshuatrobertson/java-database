@@ -5,9 +5,9 @@ public class Database {
 
     // Each database stores a list of tables contained within it
     private final HashMap<String, Table> tableList = new HashMap<>();
-    FileIO file = new FileIO();
 
     public Database(String databaseName) {
+        FileIO file = new FileIO();
         file.createDatabaseFolder(databaseName);
     }
 

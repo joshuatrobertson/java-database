@@ -18,8 +18,6 @@ public class Entry {
 
     public int getKey() { return primaryKey; }
 
-    public String getKeyAsString() { return Integer.toString(primaryKey); }
-
     public List<String> getElements() { return elements; }
 
     public String[] getElementsAsString() {

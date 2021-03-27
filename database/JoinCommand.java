@@ -1,11 +1,11 @@
 import java.util.HashMap;
 
 public class JoinCommand extends MainCommand {
-    String[] incomingCommand;
-    String attribute1, attribute2;
-    Table firstTable, secondTable;
-    String[] firstTableKeys;
-    String[] secondTableKeys;
+    private String[] incomingCommand;
+    private String attribute1, attribute2;
+    private Table firstTable, secondTable;
+    private String[] firstTableKeys;
+    private String[] secondTableKeys;
 
     public JoinCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;

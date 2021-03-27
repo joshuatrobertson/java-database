@@ -1,3 +1,0 @@
-Name age
-Josh 27
-null 26

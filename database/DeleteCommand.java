@@ -2,8 +2,7 @@ import java.util.HashMap;
 
 public class DeleteCommand extends MainCommand {
 
-    String[] tokens;
-    Table tableToUpdate;
+    private Table tableToUpdate;
 
     public DeleteCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;
@@ -13,7 +12,7 @@ public class DeleteCommand extends MainCommand {
     }
 
     public String run() {
-        tokens = createTokens(tokenizedText);
+        String[] tokens = createTokens(tokenizedText);
         if (!checkTableExists()) { return printError("Table does not exist"); }
         getTableToPrint();
         WhereCommand whereCommand = new WhereCommand(tokens, tableToUpdate, tokenizedText);
@@ -26,10 +25,10 @@ public class DeleteCommand extends MainCommand {
     }
 
     // Assign the table to the Table tableToPrint and return true, return false if it does not exist
-    private boolean getTableToPrint() {
+    private void getTableToPrint() {
         // The table will always be the first item
         String tableName = tokenizedText[2];
-        return (tableToUpdate = databases.get(currentDatabase).getTable(tableName)) != null;
+        tableToUpdate = databases.get(currentDatabase).getTable(tableName);
     }
 
     private String deleteFromTable() {

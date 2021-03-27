@@ -14,7 +14,6 @@ abstract class MainCommand {
 
 
     public MainCommand () {
-
     }
 
     public String printOk() { return "[OK]"; }

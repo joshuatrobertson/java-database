@@ -5,14 +5,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WhereCommand extends MainCommand {
-    List<String> operator = new ArrayList<>();
-    List<String> logicalOperators = new ArrayList<>();
-    List<String> item = new ArrayList<>();
-    List<String> searchTerm = new ArrayList<>();
-    List<Integer> bracketOrder = new ArrayList<>();
-    String[] incomingCommand;
-    Table tableToPrint;
-    String[] tokenText;
+    private List<String> operator = new ArrayList<>();
+    private List<String> logicalOperators = new ArrayList<>();
+    private List<String> item = new ArrayList<>();
+    private List<String> searchTerm = new ArrayList<>();
+    private List<Integer> bracketOrder = new ArrayList<>();
+    private String[] incomingCommand;
+    private Table tableToPrint;
+    private String[] tokenText;
     private Boolean errorFound = false;
     private String errorMessage;
     int openingBrackets, closingBrackets;

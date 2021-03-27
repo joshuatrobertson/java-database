@@ -2,7 +2,7 @@ import java.util.HashMap;
 
 public class AlterCommand extends MainCommand {
 
-    String alterationType, attributeName;
+    private String alterationType, attributeName;
 
     public AlterCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;

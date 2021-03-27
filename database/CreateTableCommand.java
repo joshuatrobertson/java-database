@@ -2,9 +2,9 @@ import java.util.*;
 
 public class CreateTableCommand extends MainCommand {
 
-    String tableName;
-    String[] columnList;
-    String errorMessage;
+    private String tableName;
+    private String[] columnList;
+    private String errorMessage;
 
     public CreateTableCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;

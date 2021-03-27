@@ -1,13 +1,11 @@
 import java.util.*;
 
 public class Search {
-    Table tableToSearch;
     final List<Integer> searchResults = new ArrayList<>();
-    List<Entry> oldEntries;
+    private final List<Entry> oldEntries;
 
 
     public Search(Table tableToSearch) {
-        this.tableToSearch = tableToSearch;
         oldEntries = tableToSearch.getEntries();
     }
 

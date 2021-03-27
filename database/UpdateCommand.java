@@ -4,17 +4,14 @@ import java.util.List;
 
 public class UpdateCommand extends MainCommand {
 
-    String[] tokens;
-    String[] incomingCommand;
-    Table tableToUpdate;
-    String[] whereValues;
-    List<Integer> updateColumns;
-    List<String> updateItems;
+    private String[] tokens;
+    private Table tableToUpdate;
+    private List<Integer> updateColumns;
+    private List<String> updateItems;
 
 
     public UpdateCommand(String[] incomingCommand, HashMap<String, Database> databases, String currentDatabase) {
         super.tokenizedText = incomingCommand;
-        this.incomingCommand = incomingCommand;
         super.databases = databases;
         super.currentDatabase = currentDatabase;
         super.currentTable = tokenizedText[1];
@@ -30,7 +27,9 @@ public class UpdateCommand extends MainCommand {
         return getKeysAndRun();
     }
 
-    private void getValues() { whereValues = tokens[1].split(" "); }
+    private void getValues() {
+        String[] whereValues = tokens[1].split(" ");
+    }
 
 
     // Assign the table to the Table tableToPrint and return true, return false if it does not exist

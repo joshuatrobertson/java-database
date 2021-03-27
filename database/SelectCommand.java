@@ -62,7 +62,7 @@ public class SelectCommand extends MainCommand {
     private boolean checkCommas() {
         StringBuilder stringBuilder = new StringBuilder();
         for (String s : tokenizedText) {
-            stringBuilder.append(s + " ");
+            stringBuilder.append(s).append(" ");
         }
         String commaCheck = stringBuilder.toString();
         commaCheck = commaCheck.toLowerCase().split("from")[0];

@@ -2,10 +2,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 public class InsertCommand extends MainCommand {
 
-    String entries;
-    Table tableToInsert;
-    int numberOfEntries;
-    String errorMessage;
+    private String entries;
+    private Table tableToInsert;
+    private int numberOfEntries;
+    private String errorMessage;
 
     public InsertCommand(HashMap<String, Database> databases, String[] tokenizedText, String currentDatabase) {
         super.tokenizedText = tokenizedText;
