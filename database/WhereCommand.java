@@ -15,11 +15,14 @@ public class WhereCommand extends MainCommand {
     String[] tokenText;
     private Boolean errorFound = false;
     private String errorMessage;
+    int openingBrackets, closingBrackets;
 
     public WhereCommand(String[] incomingCommand, Table tableToPrint, String[] tokenizedText) {
         this.incomingCommand = incomingCommand;
         this.tableToPrint = tableToPrint;
         this.tokenText = tokenizedText;
+        openingBrackets = 0;
+        closingBrackets = 0;
     }
 
     public void run() {
@@ -30,9 +33,11 @@ public class WhereCommand extends MainCommand {
     }
 
     private void checkErrors() {
+        if (checkBracketCount()) { return; }
         if (checkQuotes()) { return; }
         if (checkStringExpected()) { return; }
-        if (checkConvertStrings()) { return; }
+        checkConvertStrings();
+
     }
 
 
@@ -45,6 +50,15 @@ public class WhereCommand extends MainCommand {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    private boolean checkBracketCount() {
+        if (openingBrackets != closingBrackets) {
+            errorFound = true;
+            errorMessage = "Missing closing/ opening brackets";
+            return true;
         }
         return false;
     }
@@ -195,7 +209,9 @@ public class WhereCommand extends MainCommand {
 
             // Reduce the bracket count by one to remove one set of brackets
             if (bracketOrder.size() > 2) {
-                bracketOrder.set(firstRow, bracketOrder.get(firstRow) - 1);
+                if (bracketOrder.get(firstRow) != 1) {
+                    bracketOrder.set(firstRow, bracketOrder.get(firstRow) - 1);
+                }
                 bracketOrder.remove(secondRow);
             }
             else {
@@ -293,6 +309,7 @@ public class WhereCommand extends MainCommand {
             if (c == '(') {
                 // Increase bracket count
                 bracketCount++;
+                openingBrackets++;
             } else if (userQuery.charAt(i) == ')') {
                 executionOrder.add(bracketCount);
                 // Closing bracket and therefore loop through the query until a non ')'
@@ -300,6 +317,7 @@ public class WhereCommand extends MainCommand {
                 while (userQuery.charAt(i) == ')') {
                     i++;
                     bracketCount--;
+                    closingBrackets++;
                 }
             }
         }

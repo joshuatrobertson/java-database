@@ -41,6 +41,7 @@ public class InsertCommand extends MainCommand {
         tableName = tableName.substring(tableName.toLowerCase().indexOf("into"), tableName.toLowerCase().indexOf("("));
         // Remove "table and '|,"
         tableName = tableName.replaceAll("[,']|\\b(?i)into\\b", "").trim();
+        tableName = tableName.replaceAll("(?i)values", "").trim();
         return tableName;
     }
 

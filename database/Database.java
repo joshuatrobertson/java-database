@@ -6,11 +6,9 @@ public class Database {
     // Each database stores a list of tables contained within it
     private final HashMap<String, Table> tableList = new HashMap<>();
     FileIO file = new FileIO();
-    private String databaseName;
 
     public Database(String databaseName) {
         file.createDatabaseFolder(databaseName);
-        this.databaseName = databaseName;
     }
 
     public void removeTable(String tableName) {
@@ -33,7 +31,7 @@ public class Database {
         return tableList.containsKey(TableName);
     }
 
-    public String printJoinCommand(Table firstTable, Table secondTable, String[] firstKeys, String[] secondKeys, String attribute1, String attribute2) {
+    public String printJoinCommand(Table firstTable, Table secondTable, String[] firstKeys, String[] secondKeys) {
         List<Entry> entries1 = firstTable.getEntries();
         List<Entry> entries2 = secondTable.getEntries();
         List<String> columns1 = firstTable.getColumns();
@@ -47,16 +45,11 @@ public class Database {
         // Prints out the column titles
         builder.append("id" + "\t");
         for (String attribute : columns1) {
-            if (!attribute.equals(attribute1)) {
                 builder.append(firstTable.getTableName()).append(".").append(attribute).append("\t");
-
-            }
         }
         for (String attribute : columns2) {
-            if (!attribute.equals(attribute2)) {
                 // Appends the table + attribute name
                 builder.append(secondTable.getTableName()).append(".").append(attribute).append("\t");
-            }
         }
         builder.append("\n");
 
@@ -68,17 +61,8 @@ public class Database {
                 if (firstKeys[i].equals(secondKeys[j])) {
                     builder.append(id).append("\t");
                     // if the attribute is not the id, then print the elements
-                    if (!attribute1.equals("id")) {
-                        printSingleElements(entries1, builder, i);
-                    } else {
-                        printSingleElementsId(entries1, builder, i);
-
-                    }
-                    if (!attribute2.equals("id")) {
-                        printSingleElements(entries2, builder, j);
-                    } else {
-                        printSingleElementsId(entries2, builder, j);
-                    }
+                    printSingleElements(entries1, builder, i);
+                    printSingleElements(entries2, builder, j);
                     builder.append("\n");
                     id++;
                 }
@@ -88,25 +72,13 @@ public class Database {
         return builder.toString();
     }
 
-    public String getDatabaseName() { return databaseName; }
-
-    static void printSingleElementsId(List<Entry> entries, StringBuilder builder, int location) {
-        // Loop through each entry
-        for (int x = 0; x < entries.get(location).getElements().size(); x++) {
-            if (!(entries.get(location).getKeyAsString().replace("'", "")).trim().equals("null")) {
-                builder.append(entries.get(location).getSingleElement(x).replace("'", "").trim()).append("\t");
-            }
-            builder.append("\t");
-        }
-    }
-
     static void printSingleElements(List<Entry> entries, StringBuilder builder, int location) {
         for (int x = 0; x < entries.get(location).getElements().size(); x++)
-            if (!(entries.get(location).getKeyAsString().replace("'", "")).trim().equals("null")) {
+            if (!(entries.get(location).getSingleElement(x).replace("'", "")).trim().equals("null")) {
                     builder.append(entries.get(location).getSingleElement(x).replace("'", "").trim()).append("\t");
             }
-        builder.append("\t");
+        else {
+                builder.append("\t");
+            }
     }
-
-    public HashMap<String, Table> getTableList() { return tableList; }
 }

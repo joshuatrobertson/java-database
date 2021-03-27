@@ -16,6 +16,7 @@ public class JoinCommand extends MainCommand {
 
 
     public String run() {
+        if (!incomingCommand[2].equalsIgnoreCase("and")) { return printError("Missing or incorrect AND word"); }
         if(!getTables()) { return printError("Table does not exist"); }
         if(!getAttributes()) { return printError("Attribute does not exist"); }
         getKeys();
@@ -23,7 +24,7 @@ public class JoinCommand extends MainCommand {
     }
 
     private String printTable() {
-        return databases.get(currentDatabase).printJoinCommand(firstTable, secondTable, firstTableKeys, secondTableKeys, attribute1, attribute2);
+        return databases.get(currentDatabase).printJoinCommand(firstTable, secondTable, firstTableKeys, secondTableKeys);
     }
 
     // Find the key for the first table and corresponding matching key
@@ -57,11 +58,10 @@ public class JoinCommand extends MainCommand {
         attribute1 = tokenizedText[5];
         attribute2 = tokenizedText[7].replace(";", "");
         // Assign the attributes and check they exist
-        if (!attribute1.equals("id") && !attribute2.equals("id")) {
-            return (firstTable.checkAttributeExists(attribute1) &&
-            secondTable.checkAttributeExists(attribute2));
+        if(!attribute1.equals("id") && !firstTable.checkAttributeExists(attribute1)) {
+            return false;
         }
-        else return true;
+        return attribute2.equals("id") || secondTable.checkAttributeExists(attribute2);
     }
 
 
